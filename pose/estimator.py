@@ -50,13 +50,18 @@ class PoseEstimator:
             
             hip_center_x = (left_hip.x + right_hip.x) / 2
             hip_center_y = (left_hip.y + right_hip.y) / 2
+
+            shoulder_width = abs(left_shoulder.x - right_shoulder.x)
+            torso_height = abs(hip_center_y - shoulder_center_y)
             
             # Return normalized dictionary
             return {
                 'shoulder_center': (shoulder_center_x, shoulder_center_y),
                 'hip_center': (hip_center_x, hip_center_y),
                 'left_shoulder': (left_shoulder.x, left_shoulder.y),
-                'right_shoulder': (right_shoulder.x, right_shoulder.y)
+                'right_shoulder': (right_shoulder.x, right_shoulder.y),
+                'shoulder_width': shoulder_width,
+                'torso_height': torso_height
             }
         except IndexError:
             return None
