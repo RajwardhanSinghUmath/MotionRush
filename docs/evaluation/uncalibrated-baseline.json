@@ -1,0 +1,643 @@
+{
+  "source": "UCF101 original CRCV server",
+  "model": "pose_landmarker_lite.task",
+  "condition": "baseline with default thresholds; no user calibration; playback timestamps for cooldowns; no input injection",
+  "clips": [
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "class": "BodyWeightSquats",
+      "group": 1,
+      "fps": 25.0,
+      "frames": 267,
+      "detected_frames": 267,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 267,
+      "actions": {
+        "Jump": 3
+      },
+      "inference_median_ms": 20.33,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.4937904626131058,
+            0.4208369255065918
+          ]
+        },
+        {
+          "timestamp_ms": 4720,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.44709134101867676,
+            0.6630708575248718
+          ]
+        },
+        {
+          "timestamp_ms": 9840,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.44634830951690674,
+            0.6689761877059937
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "class": "BodyWeightSquats",
+      "group": 2,
+      "fps": 25.0,
+      "frames": 102,
+      "detected_frames": 102,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 102,
+      "actions": {
+        "Jump": 2
+      },
+      "inference_median_ms": 22.52,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.581777811050415,
+            0.5883601009845734
+          ]
+        },
+        {
+          "timestamp_ms": 3160,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5625055730342865,
+            0.6685357987880707
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "class": "BodyWeightSquats",
+      "group": 3,
+      "fps": 25.0,
+      "frames": 132,
+      "detected_frames": 132,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 132,
+      "actions": {
+        "Jump": 4,
+        "Squat": 3,
+        "Right": 2,
+        "Left": 2
+      },
+      "inference_median_ms": 22.69,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.6057714521884918,
+            0.5628819465637207
+          ]
+        },
+        {
+          "timestamp_ms": 1640,
+          "actions": [
+            "Squat"
+          ],
+          "hip_center": [
+            0.5931970477104187,
+            0.904708594083786
+          ]
+        },
+        {
+          "timestamp_ms": 1880,
+          "actions": [
+            "Right"
+          ],
+          "hip_center": [
+            0.6464250683784485,
+            0.789315402507782
+          ]
+        },
+        {
+          "timestamp_ms": 2080,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.6367212533950806,
+            0.6607049703598022
+          ]
+        },
+        {
+          "timestamp_ms": 2120,
+          "actions": [
+            "Left"
+          ],
+          "hip_center": [
+            0.6256858110427856,
+            0.6263147294521332
+          ]
+        },
+        {
+          "timestamp_ms": 3080,
+          "actions": [
+            "Squat"
+          ],
+          "hip_center": [
+            0.5601091086864471,
+            0.9016605913639069
+          ]
+        },
+        {
+          "timestamp_ms": 3400,
+          "actions": [
+            "Right"
+          ],
+          "hip_center": [
+            0.6409226953983307,
+            0.7061789929866791
+          ]
+        },
+        {
+          "timestamp_ms": 3520,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.6261862218379974,
+            0.6395316123962402
+          ]
+        },
+        {
+          "timestamp_ms": 3640,
+          "actions": [
+            "Left"
+          ],
+          "hip_center": [
+            0.617218017578125,
+            0.6187256574630737
+          ]
+        },
+        {
+          "timestamp_ms": 4440,
+          "actions": [
+            "Squat"
+          ],
+          "hip_center": [
+            0.6116387844085693,
+            0.8965279459953308
+          ]
+        },
+        {
+          "timestamp_ms": 4840,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.6277447044849396,
+            0.6665629148483276
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_JumpingJack_g01_c01.avi",
+      "class": "JumpingJack",
+      "group": 1,
+      "fps": 29.97002997002997,
+      "frames": 93,
+      "detected_frames": 93,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 93,
+      "actions": {
+        "Jump": 1
+      },
+      "inference_median_ms": 24.72,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5389411151409149,
+            0.589917004108429
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_JumpingJack_g02_c01.avi",
+      "class": "JumpingJack",
+      "group": 2,
+      "fps": 29.97002997002997,
+      "frames": 63,
+      "detected_frames": 63,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 63,
+      "actions": {
+        "Jump": 1
+      },
+      "inference_median_ms": 21.61,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.3969466835260391,
+            0.5417565405368805
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_JumpingJack_g03_c01.avi",
+      "class": "JumpingJack",
+      "group": 3,
+      "fps": 29.97002997002997,
+      "frames": 56,
+      "detected_frames": 56,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 56,
+      "actions": {
+        "Jump": 3
+      },
+      "inference_median_ms": 23.07,
+      "trace": [
+        {
+          "timestamp_ms": 267,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5233874917030334,
+            0.6612184941768646
+          ]
+        },
+        {
+          "timestamp_ms": 701,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5394849479198456,
+            0.6688737273216248
+          ]
+        },
+        {
+          "timestamp_ms": 1134,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5340725779533386,
+            0.6613303422927856
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_JumpRope_g01_c01.avi",
+      "class": "JumpRope",
+      "group": 1,
+      "fps": 29.97002997002997,
+      "frames": 257,
+      "detected_frames": 257,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 257,
+      "actions": {
+        "Jump": 7
+      },
+      "inference_median_ms": 15.77,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5602953135967255,
+            0.5882451236248016
+          ]
+        },
+        {
+          "timestamp_ms": 4071,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.514411062002182,
+            0.6418246030807495
+          ]
+        },
+        {
+          "timestamp_ms": 4872,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5126956403255463,
+            0.6586151719093323
+          ]
+        },
+        {
+          "timestamp_ms": 5706,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.49219219386577606,
+            0.662649005651474
+          ]
+        },
+        {
+          "timestamp_ms": 6506,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.46562328934669495,
+            0.6675989329814911
+          ]
+        },
+        {
+          "timestamp_ms": 7341,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.4495031535625458,
+            0.6547963917255402
+          ]
+        },
+        {
+          "timestamp_ms": 8075,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.4647972881793976,
+            0.6578857600688934
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_JumpRope_g02_c01.avi",
+      "class": "JumpRope",
+      "group": 2,
+      "fps": 29.97002997002997,
+      "frames": 448,
+      "detected_frames": 448,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 448,
+      "actions": {
+        "Jump": 1
+      },
+      "inference_median_ms": 23.01,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.4936433434486389,
+            0.4172447770833969
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_JumpRope_g03_c01.avi",
+      "class": "JumpRope",
+      "group": 3,
+      "fps": 29.97002997002997,
+      "frames": 294,
+      "detected_frames": 294,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 294,
+      "actions": {
+        "Jump": 1
+      },
+      "inference_median_ms": 25.23,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5385335981845856,
+            0.4863281100988388
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_TaiChi_g01_c01.avi",
+      "class": "TaiChi",
+      "group": 1,
+      "fps": 25.0,
+      "frames": 168,
+      "detected_frames": 168,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 168,
+      "actions": {
+        "Jump": 1
+      },
+      "inference_median_ms": 25.69,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.45297157764434814,
+            0.31408077478408813
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_TaiChi_g02_c01.avi",
+      "class": "TaiChi",
+      "group": 2,
+      "fps": 25.0,
+      "frames": 176,
+      "detected_frames": 176,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 176,
+      "actions": {
+        "Jump": 1
+      },
+      "inference_median_ms": 24.07,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.5548098385334015,
+            0.513167679309845
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_TaiChi_g03_c01.avi",
+      "class": "TaiChi",
+      "group": 3,
+      "fps": 25.0,
+      "frames": 180,
+      "detected_frames": 180,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 180,
+      "actions": {
+        "Jump": 1
+      },
+      "inference_median_ms": 24.91,
+      "trace": [
+        {
+          "timestamp_ms": 0,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.518195852637291,
+            0.5099004805088043
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_WalkingWithDog_g01_c01.avi",
+      "class": "WalkingWithDog",
+      "group": 1,
+      "fps": 29.97002997002997,
+      "frames": 240,
+      "detected_frames": 201,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 201,
+      "actions": {
+        "Jump": 1
+      },
+      "inference_median_ms": 24.25,
+      "trace": [
+        {
+          "timestamp_ms": 33,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.4537041634321213,
+            0.4472028464078903
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_WalkingWithDog_g02_c01.avi",
+      "class": "WalkingWithDog",
+      "group": 2,
+      "fps": 29.97002997002997,
+      "frames": 240,
+      "detected_frames": 240,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 240,
+      "actions": {
+        "Jump": 1,
+        "Right": 1,
+        "Left": 1
+      },
+      "inference_median_ms": 22.27,
+      "trace": [
+        {
+          "timestamp_ms": 1235,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.6350706517696381,
+            0.6634150743484497
+          ]
+        },
+        {
+          "timestamp_ms": 1268,
+          "actions": [
+            "Right"
+          ],
+          "hip_center": [
+            0.6408078074455261,
+            0.6537878811359406
+          ]
+        },
+        {
+          "timestamp_ms": 5172,
+          "actions": [
+            "Left"
+          ],
+          "hip_center": [
+            0.6394700109958649,
+            0.5315123200416565
+          ]
+        }
+      ]
+    },
+    {
+      "file": "v_WalkingWithDog_g03_c01.avi",
+      "class": "WalkingWithDog",
+      "group": 3,
+      "fps": 29.97002997002997,
+      "frames": 240,
+      "detected_frames": 40,
+      "unreliable_essential_frames": 0,
+      "accepted_by_baseline": 40,
+      "actions": {
+        "Jump": 1,
+        "Left": 1
+      },
+      "inference_median_ms": 21.74,
+      "trace": [
+        {
+          "timestamp_ms": 6473,
+          "actions": [
+            "Jump"
+          ],
+          "hip_center": [
+            0.46343638002872467,
+            0.2938459813594818
+          ]
+        },
+        {
+          "timestamp_ms": 6974,
+          "actions": [
+            "Left"
+          ],
+          "hip_center": [
+            0.35621821880340576,
+            0.2256290316581726
+          ]
+        }
+      ]
+    }
+  ]
+}

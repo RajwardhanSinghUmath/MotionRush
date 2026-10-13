@@ -1,0 +1,128 @@
+{
+  "dataset": "UCF101",
+  "publisher": "University of Central Florida CRCV",
+  "source_page": "https://www.crcv.ucf.edu/research/data-sets/ucf101/",
+  "purpose": "Real-video tracking and gesture stress tests; not a target-game accuracy benchmark",
+  "clips": [
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "class": "BodyWeightSquats",
+      "group": 1,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_BodyWeightSquats_g01_c01.avi",
+      "bytes": 523994,
+      "sha256": "1a199bf3ad385a66505fa0864a48fb9b9f9c1edfd1306d8345729ab06742c9e0"
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "class": "BodyWeightSquats",
+      "group": 2,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_BodyWeightSquats_g02_c01.avi",
+      "bytes": 381220,
+      "sha256": "5146dc67db45583e42c6d92307923f03cb13aadae252626705c49b4585a0a23c"
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "class": "BodyWeightSquats",
+      "group": 3,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_BodyWeightSquats_g03_c01.avi",
+      "bytes": 527970,
+      "sha256": "5d718b5347ad531d5c20e5d0f1809c7d62bdf0b36d0498037786b04046a5df64"
+    },
+    {
+      "file": "v_JumpingJack_g01_c01.avi",
+      "class": "JumpingJack",
+      "group": 1,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_JumpingJack_g01_c01.avi",
+      "bytes": 203714,
+      "sha256": "387d09507f2676d915f0d230e311f2cb484cbbd8c7f59cee9d36cd171be26b68"
+    },
+    {
+      "file": "v_JumpingJack_g02_c01.avi",
+      "class": "JumpingJack",
+      "group": 2,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_JumpingJack_g02_c01.avi",
+      "bytes": 208752,
+      "sha256": "eadb800802e5439b7e3121738b998997825048cfe758b67eff8ebc149333833e"
+    },
+    {
+      "file": "v_JumpingJack_g03_c01.avi",
+      "class": "JumpingJack",
+      "group": 3,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_JumpingJack_g03_c01.avi",
+      "bytes": 175698,
+      "sha256": "68ee936be0b4646c15081f84677483d48d192c7a8bb6716bbe4245a541b7cdb9"
+    },
+    {
+      "file": "v_JumpRope_g01_c01.avi",
+      "class": "JumpRope",
+      "group": 1,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_JumpRope_g01_c01.avi",
+      "bytes": 584054,
+      "sha256": "0ca703d875e402b88368858dfd19b4d891a18115d37749669a321680437dced5"
+    },
+    {
+      "file": "v_JumpRope_g02_c01.avi",
+      "class": "JumpRope",
+      "group": 2,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_JumpRope_g02_c01.avi",
+      "bytes": 1073666,
+      "sha256": "a2c0e34603cc73a9aa630335d3f2a185db25b77a6eb04ac9ea7494118014538d"
+    },
+    {
+      "file": "v_JumpRope_g03_c01.avi",
+      "class": "JumpRope",
+      "group": 3,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_JumpRope_g03_c01.avi",
+      "bytes": 665326,
+      "sha256": "196f83741979ae7113cdb2bdb4f11165b43eaf9b63ddeb676e401d9e7685acca"
+    },
+    {
+      "file": "v_TaiChi_g01_c01.avi",
+      "class": "TaiChi",
+      "group": 1,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_TaiChi_g01_c01.avi",
+      "bytes": 477440,
+      "sha256": "1d003eda6ce9a541d51240af2600894a9fd934a55a6928775e8608fa97a596fb"
+    },
+    {
+      "file": "v_TaiChi_g02_c01.avi",
+      "class": "TaiChi",
+      "group": 2,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_TaiChi_g02_c01.avi",
+      "bytes": 458766,
+      "sha256": "4b168ffa3522f2a57c01c9ac25e5d17b808594e15dcdd45755377673974a74a1"
+    },
+    {
+      "file": "v_TaiChi_g03_c01.avi",
+      "class": "TaiChi",
+      "group": 3,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_TaiChi_g03_c01.avi",
+      "bytes": 442088,
+      "sha256": "6cea84a94b9ed0526d27b987d18066513363f2f412aacc48fc07b470836b293f"
+    },
+    {
+      "file": "v_WalkingWithDog_g01_c01.avi",
+      "class": "WalkingWithDog",
+      "group": 1,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_WalkingWithDog_g01_c01.avi",
+      "bytes": 605532,
+      "sha256": "66c58fe02a7592984387a96966ea54d176953eef791a617ad1da9d7a22b26cca"
+    },
+    {
+      "file": "v_WalkingWithDog_g02_c01.avi",
+      "class": "WalkingWithDog",
+      "group": 2,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_WalkingWithDog_g02_c01.avi",
+      "bytes": 584058,
+      "sha256": "adaa14a34a07b2f2beca67f8c888737479c0f20051db6ee04fe6f13487d8f2b0"
+    },
+    {
+      "file": "v_WalkingWithDog_g03_c01.avi",
+      "class": "WalkingWithDog",
+      "group": 3,
+      "source_url": "http://www.crcv.ucf.edu/THUMOS14/UCF101/UCF101/v_WalkingWithDog_g03_c01.avi",
+      "bytes": 592574,
+      "sha256": "b5ddb65c40fbc12a655bf7e99c9c3a5b67bb80235c562f1d8cbf6bd2ad572d94"
+    }
+  ]
+}
