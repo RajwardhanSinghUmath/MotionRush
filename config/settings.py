@@ -10,6 +10,10 @@ KEY_RIGHT = 'right'
 KEY_HOLD_SECONDS = 0.02
 INTER_KEY_GAP_SECONDS = 0.03
 
+# Every essential shoulder/hip landmark must be reliable and in frame.
+MIN_LANDMARK_VISIBILITY = 0.5
+MIN_LANDMARK_PRESENCE = 0.5
+
 # Camera settings
 CAMERA_WIDTH = 640
 CAMERA_HEIGHT = 480

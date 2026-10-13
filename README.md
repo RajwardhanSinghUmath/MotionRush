@@ -24,8 +24,9 @@ GitHub Actions runs these checks on Windows. A successful check does not establi
 
 ## Current limitations and troubleshooting
 
-Calibration currently uses a single frame, and startup enables threshold rules immediately. Tracking confidence filtering, stable calibration, pause/focus handling, and robust tracking recovery are being developed. Scores, game-over state, and run summaries require a separate game integration.
+Calibration currently uses a single frame, and startup enables threshold rules immediately. Essential shoulder/hip confidence and framing are checked before issuing gesture features. Stable calibration, pause/focus handling, and robust tracking recovery are being developed. Scores, game-over state, and run summaries require a separate game integration.
 
 If the model cannot be found, check the launch directory and bundled asset. If camera capture fails, close other camera applications, check Windows camera access, and confirm the camera index in `CameraStream`. If the game does not respond, confirm keyboard focus and test its arrow-key bindings manually. A small preview may require resizing for readable labels.
 
 Model provenance and project licensing still need to be documented before a release. The dependency lock does not establish redistribution rights for the bundled model or external evaluation videos.
+
