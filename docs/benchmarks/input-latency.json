@@ -1,0 +1,38 @@
+{
+  "native_input_mocked": true,
+  "timing_sleeps_real": true,
+  "measurements": {
+    "single": {
+      "samples_ms": [
+        33.95,
+        31.81,
+        30.53,
+        31.34,
+        30.76,
+        31.14,
+        31.8,
+        30.58,
+        31.34,
+        31.15
+      ],
+      "median_ms": 31.24,
+      "max_ms": 33.95
+    },
+    "double": {
+      "samples_ms": [
+        93.21,
+        94.95,
+        93.78,
+        94.64,
+        93.43,
+        93.6,
+        93.89,
+        93.43,
+        94.24,
+        94.07
+      ],
+      "median_ms": 93.84,
+      "max_ms": 94.95
+    }
+  }
+}
