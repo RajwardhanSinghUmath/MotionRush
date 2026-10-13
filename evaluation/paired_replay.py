@@ -85,16 +85,18 @@ def main():
             events = [{'action': event['action'],
                        'start_ms': round(event['start_frame'] * 1000 / result['fps']),
                        'end_ms': round(event['end_frame'] * 1000 / result['fps'])}
-                      for event in label['events']]
+                      for event in (label['events'] or [])]
             episode['motion_result'] = result
             trace_path = args.output / (Path(name).stem + '.jsonl')
             with trace_path.open(encoding='utf-8') as trace:
-                prefix = [json.loads(line) for line in islice(trace, max(label['initial_neutral_frames']) + 1)]
+                prefix = [json.loads(line) for line in islice(trace, max(label['initial_neutral_frames'], default=-1) + 1)]
             initial_features = [prefix[index]['features'] for index in label['initial_neutral_frames']]
             alignment = check_reference_alignment(profile, initial_features)
             episode['reference_alignment'] = alignment
             if not alignment['matched']:
                 episode.update(eligible=False, reason=alignment['reason'])
+            elif label['events'] is None:
+                episode.update(eligible=False, reason='No reviewed event annotations')
             else:
                 episode.update(score_motion(result, events))
         report['episodes'].append(episode)

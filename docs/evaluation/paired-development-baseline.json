@@ -1,15 +1,15 @@
 {
-  "revision": "7d562e01af9a36ce9370de7f5bf733019083f545",
+  "revision": "e69ed6321f7faf0ca2c08c1cf8cfce258b2e9600",
   "source_sha256": {
     "evaluation/replay.py": "f918a11c9aac090f47846a6b0896814b9a3acf5e5299033a3f4229f00cd08026",
-    "evaluation/paired_replay.py": "b6606a9785b2a51a5d515d1dccd8319e6af8d09f350741c3ae3a9c51c7379f5a",
+    "evaluation/paired_replay.py": "ab48f44e50296d4227a0d780e69f54060ac6c46fdd77dcd5719d2349586d13c9",
     "control/gesture_recognizer.py": "dfdc3193321f62534777de209f3bcc05da68967567a5d8eeb24c445250d7a7c2",
     "control/calibration.py": "dff791880448dcb8fe09d327ff2f1ae547b2aee3b5cac3bcadaca061f187c6f9",
     "pose/estimator.py": "bec6b18b41187a9742bbfea5ed1e2414f0b7e0fdbb28a86ab881ef987692168c",
     "config/settings.py": "9522a7201a9bd6d3977cc6fff97d13bfcf48614d08fdf8b703df828394720b68"
   },
   "model_sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
-  "annotation_sha256": "87cd237bd16d733e49f04953d3015f07fe3a6ab7f33a1447101203bad58d90f5",
+  "annotation_sha256": "8c82f88f917136351ca8169d43b0513d52f2ed2688a51350a2cf5e35fdaaebef",
   "split": "development",
   "subjects": [
     "daria",
@@ -49,7 +49,7 @@
           "lane_half_width": 0.06713037379086018
         },
         "final_controller_status": "Ready",
-        "inference_median_ms": 12.08
+        "inference_median_ms": 11.48
       },
       "motion_result": {
         "file": "daria_pjump.avi",
@@ -101,7 +101,7 @@
           "lane_half_width": 0.06713037379086018
         },
         "final_controller_status": "Ready",
-        "inference_median_ms": 19.22
+        "inference_median_ms": 23.21
       },
       "reference_alignment": {
         "x_torso_offset": 0.8689012161232086,
@@ -143,7 +143,7 @@
           "lane_half_width": 0.07987320683896543
         },
         "final_controller_status": "Ready",
-        "inference_median_ms": 21.77
+        "inference_median_ms": 23.97
       },
       "motion_result": {
         "file": "eli_pjump.avi",
@@ -182,12 +182,12 @@
           "lane_half_width": 0.07987320683896543
         },
         "final_controller_status": "Ready",
-        "inference_median_ms": 23.2
+        "inference_median_ms": 27.08
       },
       "reference_alignment": {
-        "x_torso_offset": 0.05736347337065635,
-        "y_torso_offset": 0.09262608368912267,
-        "relative_scale_change": 0.06986899048037887,
+        "x_torso_offset": 0.05898201367078609,
+        "y_torso_offset": 0.04969772420859264,
+        "relative_scale_change": 0.05524764287371042,
         "matched": true,
         "reason": "Aligned inspected anchor"
       },
@@ -195,9 +195,9 @@
       "metrics": {
         "true_positive": 2,
         "false_positive": 0,
-        "false_negative": 2,
+        "false_negative": 0,
         "precision": 1.0,
-        "recall": 0.5,
+        "recall": 1.0,
         "unmatched_events": []
       }
     }

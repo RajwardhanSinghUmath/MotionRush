@@ -13,24 +13,18 @@
     },
     "eli_pjump.avi": {
       "reference_clip": "eli_wave1.avi",
-      "initial_neutral_frames": [0, 1, 2],
+      "initial_neutral_frames": [0, 1],
+      "review": "Every frame reviewed. Two airborne cycles; earlier sparse-grid labels incorrectly counted ascent and descent as separate jumps.",
       "events": [
-        {"action": "Jump", "start_frame": 4, "end_frame": 11},
-        {"action": "Jump", "start_frame": 15, "end_frame": 22},
-        {"action": "Jump", "start_frame": 26, "end_frame": 33},
-        {"action": "Jump", "start_frame": 36, "end_frame": 41}
+        {"action": "Jump", "start_frame": 4, "end_frame": 18},
+        {"action": "Jump", "start_frame": 25, "end_frame": 37}
       ]
     },
     "ira_pjump.avi": {
       "reference_clip": "ira_wave1.avi",
-      "initial_neutral_frames": [0, 1, 2],
-      "events": [
-        {"action": "Jump", "start_frame": 3, "end_frame": 24},
-        {"action": "Jump", "start_frame": 28, "end_frame": 49},
-        {"action": "Jump", "start_frame": 53, "end_frame": 74},
-        {"action": "Jump", "start_frame": 78, "end_frame": 99},
-        {"action": "Jump", "start_frame": 103, "end_frame": 126}
-      ]
+      "initial_neutral_frames": [],
+      "review": "Clip starts during a jump. Earlier presumed neutral frames and sparse-grid event counts were invalid; retain raw replay as a diagnostic without an accuracy score.",
+      "events": null
     }
   }
 }
