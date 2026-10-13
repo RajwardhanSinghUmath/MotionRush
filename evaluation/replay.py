@@ -108,7 +108,7 @@ def replay_clip(clip, path, destination):
     finally:
         video.release()
         if estimator is not None:
-            estimator.detector.close()
+            estimator.close()
 
 
 def main():

@@ -1,18 +1,30 @@
 import cv2
 import math
+from pathlib import Path
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from config.settings import MIN_LANDMARK_VISIBILITY, MIN_LANDMARK_PRESENCE
 
 class PoseEstimator:
-    def __init__(self):
-        base_options = python.BaseOptions(model_asset_path='pose_landmarker_lite.task')
+    def __init__(self, model_path=None):
+        model_path = Path(model_path) if model_path is not None else (
+            Path(__file__).resolve().parents[1] / 'pose_landmarker_lite.task'
+        )
+        if not model_path.is_file():
+            raise FileNotFoundError(f'Pose model not found: {model_path}')
+        base_options = python.BaseOptions(model_asset_path=str(model_path.resolve()))
         options = vision.PoseLandmarkerOptions(
             base_options=base_options,
             running_mode=vision.RunningMode.VIDEO,
             output_segmentation_masks=False)
         self.detector = vision.PoseLandmarker.create_from_options(options)
+        self._closed = False
+
+    def close(self):
+        if not self._closed:
+            self.detector.close()
+            self._closed = True
 
     def process_frame(self, frame, timestamp_ms):
         """Estimate pose using the frame's monotonic capture receipt timestamp."""

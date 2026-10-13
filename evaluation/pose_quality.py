@@ -76,7 +76,7 @@ def generate(data_directory):
             finally:
                 capture.release()
                 if estimator is not None:
-                    estimator.detector.close()
+                    estimator.close()
     model = Path(__file__).resolve().parents[1] / 'pose_landmarker_lite.task'
     return {
         'description': 'Actual model outputs from original UCF101 frames and controlled image perturbations; not independent live-camera data',
