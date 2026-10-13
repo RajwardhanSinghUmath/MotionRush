@@ -13,6 +13,7 @@ import time
 import cv2
 
 from control.gesture_recognizer import GestureRecognizer
+from control.delivery import simulated_delivery
 from pose.estimator import PoseEstimator
 from evaluation.download import DEFAULT_MANIFEST, download_clip
 
@@ -20,7 +21,7 @@ from evaluation.download import DEFAULT_MANIFEST, download_clip
 def source_provenance():
     root = Path(__file__).resolve().parents[1]
     modules = ('evaluation/replay.py', 'evaluation/paired_replay.py',
-               'control/gesture_recognizer.py', 'control/calibration.py',
+               'control/gesture_recognizer.py', 'control/calibration.py', 'control/delivery.py',
                'pose/estimator.py', 'config/settings.py')
     return {
         'revision': subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip(),
@@ -114,6 +115,8 @@ def replay_clip(clip, path, destination, reference_profile=None):
                 if features:
                     accepted += 1
                 emitted = recognizer.recognize(features, timestamp_ms)
+                if emitted:
+                    recognizer.acknowledge_delivery(simulated_delivery(emitted))
                 actions.update(emitted)
                 ready_frames += recognizer.is_calibrated
                 usable_ready_frames += bool(recognizer.is_calibrated and features)
@@ -134,6 +137,7 @@ def replay_clip(clip, path, destination, reference_profile=None):
             'ready_frames': ready_frames,
             'usable_ready_frames': usable_ready_frames,
             'reference_mode': 'production_reference_profile' if reference_profile is not None else 'automatic_calibration',
+            'delivery_mode': 'simulated successful insertion; no native input or game acknowledgement',
             'calibration_profile': asdict(recognizer.calibration_profile) if recognizer.calibration_profile else None,
             'final_controller_status': recognizer.status_message,
             'inference_median_ms': round(statistics.median(times), 2) if times else None,

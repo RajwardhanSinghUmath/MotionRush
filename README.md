@@ -16,6 +16,8 @@ Click the intended game to give it keyboard focus. The current bridge sends comm
 
 While the preview has focus, C starts a new standing calibration and disables input, [ and ] change the vertical gap, W/S move horizontal guides, R resets the controller's assumed lane to center, and Q exits. Calibrate only while standing neutrally and synchronize lane reset with the actual game. Calibration preserves the controller's known lane rather than claiming the game has reset. Threshold distances and controls live in `config/settings.py`.
 
+If native input delivery fails, the controller pauses further commands and displays recovery instructions. A two-stroke lane change updates the expected lane only for completed strokes; a failed stroke can still have affected the game, so this prediction must be checked manually. Center the actual game, focus the preview and press R to synchronize the expected lane. Reset retries any possibly held key release and refuses to resume if release still fails. Return to the physical neutral zone before new gestures can trigger. Recalibration does not clear an input failure. Native Windows insertion success does not prove that the game accepted a command.
+
 ## Verification
 
 Run `python -B -m unittest discover -s tests -v` for hardware-independent regression tests. Native keyboard injection and the webcam are mocked. Run `python -B test_mp.py` to load the actual model without opening the camera. Run `python -m pip check` to check installed dependencies.

@@ -1,6 +1,7 @@
 import math
 import time
 from control.calibration import StandingCalibration
+from control.delivery import DeliveryResult
 from config.settings import (
     DEFAULT_Y_CENTER, VERTICAL_GAP, DEFAULT_X_CENTER, LANE_HALF_WIDTH,
     ACTION_COOLDOWN, OPPOSITE_VERTICAL_COOLDOWN,
@@ -23,6 +24,11 @@ class GestureRecognizer:
         self.last_up_time = self.last_down_time = self.last_horizontal_time = float('-inf')
         self.last_action = "None"
         self.waist_position = None
+        self.input_fault = False
+        self.input_uncertain = False
+        self.pending_actions = ()
+        self._pending_at = None
+        self._needs_neutral = False
 
     @property
     def vertical_gap(self):
@@ -43,6 +49,9 @@ class GestureRecognizer:
         self.vertical_state = "NEUTRAL"
         self.last_up_time = self.last_down_time = self.last_horizontal_time = float('-inf')
         self.last_action = "Calibrating"
+        if self.pending_actions:
+            self.input_fault = self.input_uncertain = True
+            self.pending_actions = ()
         # Calibration does not assert that the external game changed lanes.
 
     def _apply_profile(self, profile):
@@ -54,7 +63,7 @@ class GestureRecognizer:
         self.vertical_state = "NEUTRAL"
         self.is_calibrated = True
         self.last_action = "Calibrated"
-        self.status_message = "Ready"
+        self.status_message = 'Input paused; center game, press R' if self.input_fault else 'Ready'
 
     def _place_boundaries(self, x, y, jump, squat, lane):
         values = (x, y, jump, squat, lane)
@@ -89,8 +98,40 @@ class GestureRecognizer:
     def reset_lane(self, lane="CENTER"):
         if lane not in ("LEFT", "CENTER", "RIGHT"):
             raise ValueError('Unknown lane')
+        self._needs_neutral = self.input_fault or bool(self.pending_actions)
         self.current_lane = lane
+        self.pending_actions = ()
+        self.input_fault = self.input_uncertain = False
+        self.vertical_state = 'NEUTRAL'
+        self.status_message = 'Ready' if self.is_calibrated else self.calibration.message
         self.last_action = f"Lane Reset: {lane}"
+
+    def acknowledge_delivery(self, result):
+        """Commit only completed strokes; native insertion is not game acceptance."""
+        if not self.pending_actions or not isinstance(result, DeliveryResult) or result.requested != self.pending_actions:
+            self.input_fault = self.input_uncertain = True
+            self.status_message = 'Input paused; center game, press R'
+            raise ValueError('Delivery acknowledgement does not match pending actions')
+        lanes = ('LEFT', 'CENTER', 'RIGHT')
+        for action in result.completed:
+            if action == 'Jump':
+                self.last_up_time = self._pending_at
+            elif action == 'Squat':
+                self.last_down_time = self._pending_at
+            else:
+                offset = -1 if action == 'Left' else 1
+                index = max(0, min(2, lanes.index(self.current_lane) + offset))
+                self.current_lane = lanes[index]
+                self.last_horizontal_time = self._pending_at
+        self.pending_actions = ()
+        self._pending_at = None
+        if result:
+            self.last_action = 'Sent: ' + ', '.join(result.completed)
+        else:
+            self.input_fault = True
+            self.input_uncertain = result.uncertain
+            self.last_action = 'Input failed'
+            self.status_message = 'Input paused; center game, press R'
 
     def recognize(self, features, timestamp_ms=None):
         """Use measured frame time, suppressing actions until calibration completes."""
@@ -104,6 +145,8 @@ class GestureRecognizer:
                 self.status_message = self.calibration.message
             else:
                 self.status_message = "Tracking lost" if self.is_calibrated else "Press C to calibrate"
+            if self.input_fault:
+                self.status_message = 'Input paused; center game, press R'
             return []
         waist_x, waist_y = features['hip_center']
         if not (math.isfinite(waist_x) and math.isfinite(waist_y)
@@ -116,6 +159,20 @@ class GestureRecognizer:
                 self.status_message = self.calibration.message
                 if profile is not None:
                     self._apply_profile(profile)
+            return []
+        if self.input_fault:
+            self.status_message = 'Input paused; center game, press R'
+            return []
+        if self.pending_actions:
+            self.status_message = 'Waiting for input delivery'
+            return []
+        if self._needs_neutral:
+            if not (self.x_left <= waist_x <= self.x_right and self.y_upper <= waist_y <= self.y_lower):
+                self.status_message = 'Return to neutral before resuming'
+                return []
+            self._needs_neutral = False
+            self.vertical_state = 'NEUTRAL'
+            self.status_message = 'Ready'
             return []
         self.status_message = "Ready"
         actions = []
@@ -131,7 +188,6 @@ class GestureRecognizer:
                 if (now - self.last_down_time) >= OPPOSITE_VERTICAL_COOLDOWN:
                     actions.append("Jump")
                     self.vertical_state = "UP"
-                    self.last_up_time = now
                     self.last_action = "UP (Above Line)"
 
         elif waist_y > self.y_lower:
@@ -141,7 +197,6 @@ class GestureRecognizer:
                 if (now - self.last_up_time) >= OPPOSITE_VERTICAL_COOLDOWN:
                     actions.append("Squat")
                     self.vertical_state = "DOWN"
-                    self.last_down_time = now
                     self.last_action = "DOWN (Below Line)"
 
         else:
@@ -155,40 +210,31 @@ class GestureRecognizer:
         if (now - self.last_horizontal_time) >= ACTION_COOLDOWN:
             if self.current_lane == "CENTER":
                 if waist_x < self.x_left:
-                    self.current_lane = "LEFT"
-                    self.last_horizontal_time = now
                     actions.append("Left")
                     self.last_action = "Move Left"
                 elif waist_x > self.x_right:
-                    self.current_lane = "RIGHT"
-                    self.last_horizontal_time = now
                     actions.append("Right")
                     self.last_action = "Move Right"
 
             elif self.current_lane == "LEFT":
                 if waist_x > self.x_right:
-                    self.current_lane = "RIGHT"
-                    self.last_horizontal_time = now
                     actions.extend(["Right", "Right"])
                     self.last_action = "Left -> Right"
                 elif waist_x > self.x_left:
                     # Crossed back to center -> send Right
-                    self.current_lane = "CENTER"
-                    self.last_horizontal_time = now
                     actions.append("Right")
                     self.last_action = "Return to Center (Right)"
 
             elif self.current_lane == "RIGHT":
                 if waist_x < self.x_left:
-                    self.current_lane = "LEFT"
-                    self.last_horizontal_time = now
                     actions.extend(["Left", "Left"])
                     self.last_action = "Right -> Left"
                 elif waist_x < self.x_right:
                     # Crossed back to center -> send Left
-                    self.current_lane = "CENTER"
-                    self.last_horizontal_time = now
                     actions.append("Left")
                     self.last_action = "Return to Center (Left)"
 
+        if actions:
+            self.pending_actions = tuple(actions)
+            self._pending_at = now
         return actions

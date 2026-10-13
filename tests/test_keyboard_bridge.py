@@ -52,9 +52,64 @@ class KeyboardBridgeTests(unittest.TestCase):
 
     def test_interrupted_hold_still_releases_key(self):
         self.sleep.side_effect = RuntimeError('interrupted hold')
-        with self.assertRaisesRegex(RuntimeError, 'interrupted hold'):
+        result = self.bridge.send_action('Jump')
+        self.assertFalse(result)
+        self.assertTrue(result.uncertain)
+        self.assertEqual(result.completed, ())
+        self.assertEqual(self.native_input.call_count, 2)
+
+    def test_partial_double_change_reports_only_completed_prefix(self):
+        self.native_input.side_effect = [1, 1, 0, 1]
+        result = self.bridge.send_action(['Right', 'Right'])
+        self.assertFalse(result)
+        self.assertEqual(result.requested, ('Right', 'Right'))
+        self.assertEqual(result.completed, ('Right',))
+        self.assertTrue(result.uncertain)
+
+    def test_failed_release_blocks_new_down_until_release_succeeds(self):
+        self.native_input.side_effect = [1, 0, 0, 1]
+        self.assertFalse(self.bridge.send_action('Right'))
+        self.assertFalse(self.bridge.send_action('Left'))
+        self.assertEqual(self.native_input.call_count, 2)
+        self.assertFalse(self.bridge.release_all())
+        self.assertTrue(self.bridge.release_all())
+        self.assertEqual(self.native_input.call_count, 4)
+
+    def test_invalid_sequence_is_rejected_before_valid_prefix(self):
+        result = self.bridge.send_action(['Left', 'Unknown'])
+        self.assertFalse(result)
+        self.assertEqual(result.completed, ())
+        self.assertFalse(result.uncertain)
+        self.native_input.assert_not_called()
+
+    def test_key_down_exception_attempts_release_and_reports_uncertainty(self):
+        self.native_input.side_effect = [OSError('native failure'), 1]
+        result = self.bridge.send_action('Jump')
+        self.assertFalse(result)
+        self.assertTrue(result.uncertain)
+        self.assertEqual(self.native_input.call_count, 2)
+
+    def test_key_up_exception_can_be_retried_during_close(self):
+        self.native_input.side_effect = [1, OSError('native release failure'), 1]
+        self.assertFalse(self.bridge.send_action('Jump'))
+        self.bridge.close()
+        self.assertTrue(self.bridge.release_all())
+        self.assertEqual(self.native_input.call_count, 3)
+
+    def test_keyboard_interrupt_releases_and_propagates(self):
+        self.sleep.side_effect = KeyboardInterrupt
+        with self.assertRaises(KeyboardInterrupt):
             self.bridge.send_action('Jump')
         self.assertEqual(self.native_input.call_count, 2)
+
+    def test_numlock_partial_native_insertion_is_uncertain(self):
+        with patch('pydirectinput.ctypes.windll.user32.GetKeyState', return_value=1):
+            self.native_input.side_effect = [0, 1, 1, 1]
+            result = self.bridge.send_action('Right')
+        self.assertFalse(result)
+        self.assertTrue(result.uncertain)
+        self.assertEqual(result.completed, ())
+        self.assertEqual(self.native_input.call_count, 4)
 
     def test_unknown_action_does_not_inject_input(self):
         self.assertFalse(self.bridge.send_action('Unknown'))

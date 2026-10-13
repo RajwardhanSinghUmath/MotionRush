@@ -32,6 +32,7 @@ def main():
         resources.callback(pose_estimator.close)
         recognizer = GestureRecognizer()
         keyboard = KeyboardBridge()
+        resources.callback(keyboard.close)
         overlay = UIOverlay()
         resources.callback(cv2.destroyAllWindows)
         run_controller(camera, pose_estimator, recognizer, keyboard, overlay)
@@ -80,8 +81,12 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay):
 
         actions = recognizer.recognize(features, timestamp_ms)
         if actions:
-            keyboard.send_action(actions)
-            overlay.notify_action(", ".join(actions))
+            delivery = keyboard.send_action(actions)
+            recognizer.acknowledge_delivery(delivery)
+            if delivery:
+                overlay.notify_action(', '.join(delivery.completed))
+            else:
+                print(f'[INPUT] Paused after delivery failure: {delivery.error}')
 
         # Render Visuals
         frame = overlay.draw_skeleton(frame, results)
@@ -111,8 +116,11 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay):
             recognizer.start_calibration()
             print("[SYSTEM] Stand upright and still; keep shoulders, hips and a leg visible.")
         elif key == ord('r') or key == ord('R'):
-            recognizer.reset_lane("CENTER")
-            print("[SYSTEM] Lane manually reset to CENTER.")
+            if keyboard.release_all():
+                recognizer.reset_lane("CENTER")
+                print('[SYSTEM] Expected lane reset to CENTER; match the actual game before resuming.')
+            else:
+                print('[INPUT] Reset refused: key release still failing.')
         elif key == ord('['):
             recognizer.adjust_vertical_gap(-0.01)
             print(f"[SYSTEM] Decreased line gap: {recognizer.vertical_gap*2:.2f}")

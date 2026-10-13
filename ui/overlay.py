@@ -148,7 +148,7 @@ class UIOverlay:
         cv2.putText(frame, vert_str, (245, 24),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.50, (0, 220, 255), 2, cv2.LINE_AA)
 
-        if not recognizer.is_calibrated or recognizer.waist_position is None:
+        if not recognizer.is_calibrated or recognizer.waist_position is None or recognizer.status_message != 'Ready':
             # Wrap the player instruction to keep it readable in the preview.
             message = recognizer.status_message
             instruction_scale = w / 640
@@ -168,7 +168,7 @@ class UIOverlay:
                             cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 210, 255), 1, cv2.LINE_AA)
 
         # Action Flash Banner
-        if recognizer.is_calibrated and (now - self.action_display_time) < 0.6:
+        if recognizer.is_calibrated and not recognizer.input_fault and (now - self.action_display_time) < 0.6:
             action_text = f">> {self.last_action_text.upper()} <<"
             cv2.rectangle(frame, (int(w*0.20), 44), (int(w*0.80), 80), (0, 200, 0), -1)
             cv2.putText(frame, action_text, (int(w*0.23), 69),

@@ -4,6 +4,7 @@ import unittest
 
 from control.calibration import CalibrationProfile
 from control.gesture_recognizer import GestureRecognizer
+from control.delivery import simulated_delivery
 from evaluation.replay import summarize_events
 
 
@@ -17,6 +18,8 @@ class RecordedGestureTests(unittest.TestCase):
                 events = []
                 for row in clip['rows']:
                     actions = recognizer.recognize(row['features'], row['timestamp_ms'])
+                    if actions:
+                        recognizer.acknowledge_delivery(simulated_delivery(actions))
                     events.extend({'timestamp_ms': row['timestamp_ms'], 'action': action} for action in actions)
                 expected = [{'action': event['action'],
                              'start_ms': round(event['start_frame'] * 1000 / clip['fps']),
