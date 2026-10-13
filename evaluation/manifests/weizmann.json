@@ -1,0 +1,428 @@
+{
+  "dataset": "Weizmann actions",
+  "source_page": "https://www.wisdom.weizmann.ac.il/~vision/SpaceTimeActions.html",
+  "split_policy": {
+    "development": [
+      "daria",
+      "denis",
+      "eli"
+    ],
+    "validation": [
+      "ido",
+      "ira",
+      "lena"
+    ],
+    "held_out": [
+      "lyova",
+      "moshe",
+      "shahar"
+    ]
+  },
+  "clips": [
+    {
+      "file": "ira_wave1.avi",
+      "class": "wave1",
+      "group": "ira",
+      "subject": "ira",
+      "bytes": 8013824,
+      "sha256": "691eb174b1b1d10f1b80f26f960f6af62f9700af2ce5370c8192a8b433a3128c",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "ira_wave1.avi"
+    },
+    {
+      "file": "lena_wave1.avi",
+      "class": "wave1",
+      "group": "lena",
+      "subject": "lena",
+      "bytes": 4124672,
+      "sha256": "87527f851512f045362518fa29737bdbc3e99546aa5715821bef147bf58dd04e",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "lena_wave1.avi"
+    },
+    {
+      "file": "lyova_wave1.avi",
+      "class": "wave1",
+      "group": "lyova",
+      "subject": "lyova",
+      "bytes": 4202496,
+      "sha256": "456ad7f04ac711cfb8d457f87e8e3a23eaff2b154df8da59f30f4f4260cb81bc",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "lyova_wave1.avi"
+    },
+    {
+      "file": "moshe_wave1.avi",
+      "class": "wave1",
+      "group": "moshe",
+      "subject": "moshe",
+      "bytes": 4669440,
+      "sha256": "65bdf504c0f6c5635e5ee7e23a99f3ba200b3740c6ca5ca8267ac38321c44cba",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "moshe_wave1.avi"
+    },
+    {
+      "file": "shahar_wave1.avi",
+      "class": "wave1",
+      "group": "shahar",
+      "subject": "shahar",
+      "bytes": 4747264,
+      "sha256": "ef935301020e30a038c1f7dcc21228d13ff594f71cd35ed6132e264faad5db6f",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "shahar_wave1.avi"
+    },
+    {
+      "file": "daria_wave1.avi",
+      "class": "wave1",
+      "group": "daria",
+      "subject": "daria",
+      "bytes": 6380544,
+      "sha256": "8994b436b5ed40d3c618dee35c4aa07573205433c4a0cbea07c05ff39335228c",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "daria_wave1.avi"
+    },
+    {
+      "file": "denis_wave1.avi",
+      "class": "wave1",
+      "group": "denis",
+      "subject": "denis",
+      "bytes": 4669440,
+      "sha256": "8d59dd55bdb6dfe48012083831a545f79a89a5be3419561584b8c22faa557fca",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "denis_wave1.avi"
+    },
+    {
+      "file": "eli_wave1.avi",
+      "class": "wave1",
+      "group": "eli",
+      "subject": "eli",
+      "bytes": 9725440,
+      "sha256": "4e9671b549dc4c1729d0899bb11e1152504a3707a9b55993c921434e94c4891d",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "eli_wave1.avi"
+    },
+    {
+      "file": "ido_wave1.avi",
+      "class": "wave1",
+      "group": "ido",
+      "subject": "ido",
+      "bytes": 4280320,
+      "sha256": "aad0e50720fb0bdc5c8696a9fd88547d37adaeeba06a7e938612af47263b92f5",
+      "archive": {
+        "file": "wave1.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/wave1.zip",
+        "bytes": 37395319,
+        "sha256": "d3304e166ea327da3861fb3e23960af1766e30ba669c1730dd4661d63b64600c"
+      },
+      "archive_member": "ido_wave1.avi"
+    },
+    {
+      "file": "ido_pjump.avi",
+      "class": "pjump",
+      "group": "ido",
+      "subject": "ido",
+      "bytes": 3736064,
+      "sha256": "43cb64eba65219b67465bf96bc9bd78112fff6a8eb6e412e8ac464328eb26420",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "ido_pjump.avi"
+    },
+    {
+      "file": "ira_pjump.avi",
+      "class": "pjump",
+      "group": "ira",
+      "subject": "ira",
+      "bytes": 9881088,
+      "sha256": "6d058e8ab1ce83474c17764c031df3218fdfa1ea8a68b40f8c54a2b8fea9a779",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "ira_pjump.avi"
+    },
+    {
+      "file": "lena_pjump.avi",
+      "class": "pjump",
+      "group": "lena",
+      "subject": "lena",
+      "bytes": 3813888,
+      "sha256": "8f22ab41a246329215a19073e35f67198adb456270f94fc5ad4df95d339ef920",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "lena_pjump.avi"
+    },
+    {
+      "file": "lyova_pjump.avi",
+      "class": "pjump",
+      "group": "lyova",
+      "subject": "lyova",
+      "bytes": 4280320,
+      "sha256": "870e9c77a6f128e2f49c2544c605cf00aa11aa15f6541cd618ab2f8263289d99",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "lyova_pjump.avi"
+    },
+    {
+      "file": "moshe_pjump.avi",
+      "class": "pjump",
+      "group": "moshe",
+      "subject": "moshe",
+      "bytes": 3502592,
+      "sha256": "6f187e7542cffe7a50433efa562d9ab121a775aa9f8eb28705dbf7eb2495f1d2",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "moshe_pjump.avi"
+    },
+    {
+      "file": "shahar_pjump.avi",
+      "class": "pjump",
+      "group": "shahar",
+      "subject": "shahar",
+      "bytes": 4358144,
+      "sha256": "d8aef663404821295f9f4db1709f44542dd33aa0d1170f0e53fb2d43858d1527",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "shahar_pjump.avi"
+    },
+    {
+      "file": "daria_pjump.avi",
+      "class": "pjump",
+      "group": "daria",
+      "subject": "daria",
+      "bytes": 4825088,
+      "sha256": "d16d4e13672c182703b4646db47f880e25f97ac85f2a0b346eee14d19b468c71",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "daria_pjump.avi"
+    },
+    {
+      "file": "denis_pjump.avi",
+      "class": "pjump",
+      "group": "denis",
+      "subject": "denis",
+      "bytes": 4202496,
+      "sha256": "53921c66d62d3ed4e9316cf4a77e5475999d47bd1926adc77d8e20f8dafc4f4d",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "denis_pjump.avi"
+    },
+    {
+      "file": "eli_pjump.avi",
+      "class": "pjump",
+      "group": "eli",
+      "subject": "eli",
+      "bytes": 3269120,
+      "sha256": "9f4d7ccfb8ba1ad4b6893d83ae7ad2fc03dadba23b2f5691418a3b8982e4c057",
+      "archive": {
+        "file": "pjump.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/pjump.zip",
+        "bytes": 31035069,
+        "sha256": "e930b040ebf5eea73733264b717599f7223db6a783f3ba251acfbc60a678029e"
+      },
+      "archive_member": "eli_pjump.avi"
+    },
+    {
+      "file": "ido_side.avi",
+      "class": "side",
+      "group": "ido",
+      "subject": "ido",
+      "bytes": 3035648,
+      "sha256": "34dba8103e24e821b35b770172f7c6b5b57aa46bc2c40fdb716ab0648b8e0a38",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "ido_side.avi"
+    },
+    {
+      "file": "ira_side.avi",
+      "class": "side",
+      "group": "ira",
+      "subject": "ira",
+      "bytes": 4980736,
+      "sha256": "ba2c00911e86cb15cf922c9d7efdf7599b6135bdf78ce47c7df4b0f5dc758982",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "ira_side.avi"
+    },
+    {
+      "file": "lena_side.avi",
+      "class": "side",
+      "group": "lena",
+      "subject": "lena",
+      "bytes": 4669440,
+      "sha256": "7648b969ca0520a41b50df545076a96c2b05ab936a2e118a9f1ad388ee3d6f1f",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "lena_side.avi"
+    },
+    {
+      "file": "lyova_side.avi",
+      "class": "side",
+      "group": "lyova",
+      "subject": "lyova",
+      "bytes": 3035648,
+      "sha256": "7ca46baa20aa33eac85af8d15cd621f0d51269b3e17dd078c01528dd82222956",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "lyova_side.avi"
+    },
+    {
+      "file": "moshe_side.avi",
+      "class": "side",
+      "group": "moshe",
+      "subject": "moshe",
+      "bytes": 3580416,
+      "sha256": "bf1c204ed446b841e36c6a4f8457a1003c88680e90f70eb8f1eb961b6eb41f92",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "moshe_side.avi"
+    },
+    {
+      "file": "shahar_side.avi",
+      "class": "side",
+      "group": "shahar",
+      "subject": "shahar",
+      "bytes": 3346944,
+      "sha256": "32cee091622a346e3160399a515a54baf1b5f3d521ac133c8a8ccfa931a26b14",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "shahar_side.avi"
+    },
+    {
+      "file": "daria_side.avi",
+      "class": "side",
+      "group": "daria",
+      "subject": "daria",
+      "bytes": 4124672,
+      "sha256": "febc543afad4f7d54987af88eb19b51fd58754d949331f8f2621a8ac87d9df40",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "daria_side.avi"
+    },
+    {
+      "file": "denis_side.avi",
+      "class": "side",
+      "group": "denis",
+      "subject": "denis",
+      "bytes": 4046848,
+      "sha256": "715204a845dce8afef8d7651e046fbea01c749b7a12f20d76f19e5428223cc99",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "denis_side.avi"
+    },
+    {
+      "file": "eli_side.avi",
+      "class": "side",
+      "group": "eli",
+      "subject": "eli",
+      "bytes": 3736064,
+      "sha256": "3870f363e551ae7abe6c82e0a49efc67d3df4828eb8dd57e20cb86fe8c3fabf0",
+      "archive": {
+        "file": "side.zip",
+        "source_url": "https://www.wisdom.weizmann.ac.il/~vision/VideoAnalysis/Demos/SpaceTimeActions/DB/side.zip",
+        "bytes": 25556595,
+        "sha256": "8b2e669d013fe38b44ebb265737c0eca201a7d8415000253f146da65fea22107"
+      },
+      "archive_member": "eli_side.avi"
+    }
+  ]
+}

@@ -1,7 +1,9 @@
 import hashlib
+import io
 from pathlib import Path
 import tempfile
 import unittest
+import zipfile
 from unittest.mock import patch
 
 from evaluation.download import download_clip
@@ -9,6 +11,51 @@ from evaluation.replay import summarize_events
 
 
 class EvaluationTests(unittest.TestCase):
+    def archive_clip(self, member='nested/sample.avi'):
+        video = b'example recording'
+        stream = io.BytesIO()
+        with zipfile.ZipFile(stream, 'w') as archive:
+            archive.writestr(member, video)
+        source = stream.getvalue()
+        return video, source, {
+            'file': 'sample.avi', 'bytes': len(video), 'sha256': hashlib.sha256(video).hexdigest(),
+            'archive_member': member,
+            'archive': {'file': 'source.zip', 'bytes': len(source),
+                        'sha256': hashlib.sha256(source).hexdigest()},
+        }
+
+    def test_verified_archive_member_uses_only_destination_filename(self):
+        video, source, clip = self.archive_clip('../outside.avi')
+        with tempfile.TemporaryDirectory() as directory, patch('evaluation.download.urlopen') as network:
+            archive_directory = Path(directory, '.archives')
+            archive_directory.mkdir()
+            (archive_directory / 'source.zip').write_bytes(source)
+            target = download_clip(clip, directory)
+            self.assertEqual(target, Path(directory, 'sample.avi'))
+            self.assertEqual(target.read_bytes(), video)
+            self.assertFalse(Path(directory, 'outside.avi').exists())
+            network.assert_not_called()
+
+    def test_corrupt_archive_is_rejected_before_extracting(self):
+        video, source, clip = self.archive_clip()
+        with tempfile.TemporaryDirectory() as directory:
+            archive_directory = Path(directory, '.archives')
+            archive_directory.mkdir()
+            (archive_directory / 'source.zip').write_bytes(source + b'changed')
+            with self.assertRaisesRegex(ValueError, 'checksum mismatch'):
+                download_clip(clip, directory)
+            self.assertFalse(Path(directory, 'sample.avi').exists())
+
+    def test_archive_member_hash_is_checked(self):
+        video, source, clip = self.archive_clip()
+        clip['sha256'] = hashlib.sha256(b'different').hexdigest()
+        with tempfile.TemporaryDirectory() as directory:
+            archive_directory = Path(directory, '.archives')
+            archive_directory.mkdir()
+            (archive_directory / 'source.zip').write_bytes(source)
+            with self.assertRaisesRegex(ValueError, 'checksum mismatch'):
+                download_clip(clip, directory)
+
     def test_existing_video_is_verified_without_network(self):
         data = b'example recording'
         clip = {'file': 'sample.avi', 'bytes': len(data),

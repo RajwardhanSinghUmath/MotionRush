@@ -1,0 +1,26 @@
+{
+  "dataset": "KTH human actions",
+  "source_page": "https://www.csc.kth.se/cvap/actions/",
+  "use_conditions": "Publisher states non-commercial use; see original dataset page",
+  "purpose": "Continuous standing-with-arm-motion calibration stress test; no physical game accuracy claim",
+  "clips": [
+    {
+      "file": "person15_handwaving_d1_uncomp.avi",
+      "source_url": "https://www.csc.kth.se/cvap/actions/person15_handwaving_d1_uncomp.avi",
+      "bytes": 2562048,
+      "sha256": "a87899929a34c06a2f9ea423492b89a4f3cdcacc17449bab407110e4cdbc2bb9",
+      "class": "handwaving",
+      "group": "person15",
+      "subject": "person15"
+    },
+    {
+      "file": "person15_handclapping_d1_uncomp.avi",
+      "source_url": "https://www.csc.kth.se/cvap/actions/person15_handclapping_d1_uncomp.avi",
+      "bytes": 1308672,
+      "sha256": "1076174b3d5773fcac6738e5d94b2e35424bd75bf339505ad233ec1c0ac3e541",
+      "class": "handclapping",
+      "group": "person15",
+      "subject": "person15"
+    }
+  ]
+}

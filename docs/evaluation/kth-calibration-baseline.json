@@ -1,0 +1,36 @@
+[
+  {
+    "file": "person15_handwaving_d1_uncomp.avi",
+    "class": "handwaving",
+    "group": 15,
+    "sha256": "a87899929a34c06a2f9ea423492b89a4f3cdcacc17449bab407110e4cdbc2bb9",
+    "fps": 25.0,
+    "frames": 581,
+    "detected_frames": 579,
+    "accepted_feature_frames": 579,
+    "unreliable_essential_frames": 0,
+    "actions": {},
+    "events": [],
+    "calibration_success": false,
+    "ready_frames": 0,
+    "final_controller_status": "Hold still: 11%",
+    "inference_median_ms": 23.13
+  },
+  {
+    "file": "person15_handclapping_d1_uncomp.avi",
+    "class": "handclapping",
+    "group": 15,
+    "sha256": "1076174b3d5773fcac6738e5d94b2e35424bd75bf339505ad233ec1c0ac3e541",
+    "fps": 25.0,
+    "frames": 312,
+    "detected_frames": 312,
+    "accepted_feature_frames": 312,
+    "unreliable_essential_frames": 0,
+    "actions": {},
+    "events": [],
+    "calibration_success": false,
+    "ready_frames": 0,
+    "final_controller_status": "Hold still: 5%",
+    "inference_median_ms": 25.23
+  }
+]
