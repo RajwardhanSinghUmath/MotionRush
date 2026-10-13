@@ -11,17 +11,14 @@ class PoseEstimator:
             running_mode=vision.RunningMode.VIDEO,
             output_segmentation_masks=False)
         self.detector = vision.PoseLandmarker.create_from_options(options)
-        self.timestamp_ms = 0
 
-    def process_frame(self, frame):
+    def process_frame(self, frame, timestamp_ms):
+        """Estimate pose using the frame's monotonic capture receipt timestamp."""
         # MediaPipe needs RGB
         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image_rgb)
         
-        # We need to provide a monotonically increasing timestamp in VIDEO running mode
-        self.timestamp_ms += 33 # assume ~30 fps
-        
-        results = self.detector.detect_for_video(mp_image, self.timestamp_ms)
+        results = self.detector.detect_for_video(mp_image, timestamp_ms)
         
         return results
 

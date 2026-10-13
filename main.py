@@ -60,13 +60,14 @@ def main():
     is_pinned = False
 
     while True:
-        frame = camera.read_frame()
-        if frame is None:
+        captured_frame = camera.read_frame()
+        if captured_frame is None:
             print("[ERROR] Failed to capture camera frame.")
             break
+        frame, timestamp_ms = captured_frame
 
         # Estimate pose
-        results = pose_estimator.process_frame(frame)
+        results = pose_estimator.process_frame(frame, timestamp_ms)
         features = pose_estimator.extract_landmarks(results)
 
         if features:
