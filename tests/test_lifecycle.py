@@ -14,6 +14,7 @@ import main
 from camera.device_capture import CaptureDevice
 from camera.camera_stream import CaptureRead, CapturedFrame
 from pose.estimator import PoseEstimator
+from helpers_pose import ImmediatePoseStub
 
 
 class ResourceTests(unittest.TestCase):
@@ -84,11 +85,11 @@ class MainLifecycleTests(unittest.TestCase):
         self.patches.enter_context(patch('main.InputSession', return_value=self.controls))
         self.frame = np.zeros((8, 8, 3), dtype=np.uint8)
         self.camera = Mock()
-        self.camera.read_frame.side_effect = lambda: CaptureRead('frame', CapturedFrame(self.frame, 28, now_ns(), 1))
+        self.camera.read_frame.side_effect = lambda **kwargs: CaptureRead('frame', CapturedFrame(self.frame, 28, now_ns(), 1))
         self.estimator = Mock()
         self.estimator.extract_landmarks.return_value = None
         self.camera_factory = self.patches.enter_context(patch('main.CameraStream', return_value=self.camera))
-        self.pose_factory = self.patches.enter_context(patch('main.PoseEstimator', return_value=self.estimator))
+        self.pose_factory = self.patches.enter_context(patch('main.PoseWorker', return_value=ImmediatePoseStub(self.estimator)))
         recognizer = self.patches.enter_context(patch('main.GestureRecognizer')).return_value
         recognizer.recognize.return_value = []
         self.patches.enter_context(patch('main.KeyboardBridge'))
@@ -147,7 +148,7 @@ class MainLifecycleTests(unittest.TestCase):
         main.cv2.waitKey.return_value = -1
         self.visible.return_value = 0
         main.main()
-        self.camera.read_frame.assert_called_once_with()
+        self.camera.read_frame.assert_called_once_with(timeout=0)
         self.assert_cleaned_up()
 
 

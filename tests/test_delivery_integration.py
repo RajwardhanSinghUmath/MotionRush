@@ -12,6 +12,7 @@ from camera.camera_stream import CaptureRead, CapturedFrame
 from control.calibration import CalibrationProfile
 from control.gesture_recognizer import GestureRecognizer
 from control.keyboard_bridge import KeyboardBridge
+from helpers_pose import ImmediatePoseStub
 
 
 class MainDeliveryTests(unittest.TestCase):
@@ -33,13 +34,13 @@ class MainDeliveryTests(unittest.TestCase):
         frame = np.zeros((8, 8, 3), dtype=np.uint8)
         self.camera = Mock()
         timestamps = iter([4000, 4500])
-        self.camera.read_frame.side_effect = lambda: CaptureRead('frame', CapturedFrame(frame, next(timestamps), now_ns(), 1))
+        self.camera.read_frame.side_effect = lambda **kwargs: CaptureRead('frame', CapturedFrame(frame, next(timestamps), now_ns(), 1))
         self.estimator = Mock()
         self.estimator.extract_landmarks.return_value = {'hip_center': (.8, .5)}
         self.overlay = Mock()
         for name in ('draw_skeleton', 'draw_boundary_markers', 'draw_hud'):
             getattr(self.overlay, name).return_value = frame
-        for name, instance in (('CameraStream', self.camera), ('PoseEstimator', self.estimator),
+        for name, instance in (('CameraStream', self.camera), ('PoseWorker', ImmediatePoseStub(self.estimator)),
                                ('GestureRecognizer', self.recognizer), ('KeyboardBridge', self.bridge),
                                ('UIOverlay', self.overlay)):
             self.stack.enter_context(patch('main.' + name, return_value=instance))
@@ -111,7 +112,7 @@ class MainDeliveryTests(unittest.TestCase):
         self.controls.close.assert_called_once()
 
     def test_waiting_capture_still_processes_global_quit_without_inference(self):
-        def waiting():
+        def waiting(**kwargs):
             self.controls.quit_requested = True
             return CaptureRead('waiting')
 
@@ -126,7 +127,7 @@ class MainDeliveryTests(unittest.TestCase):
         with patch.object(CapturedFrame, 'age_seconds', side_effect=[0, .4]):
             main.main()
         self.native.assert_not_called()
-        self.controls.pause.assert_called_with('Processing too slow; input paused')
+        self.controls.pause.assert_called_with('Pose source expired; input paused')
         self.assertEqual(self.recognizer.current_lane, 'CENTER')
 
     def test_stale_capture_is_not_sent_to_model_or_keyboard(self):

@@ -30,14 +30,16 @@ class GestureRecognizer:
         self._pending_at = None
         self._needs_neutral = False
         self._skip_next_action = False
+        self._resume_timestamp_ms = None
 
-    def prepare_resume(self):
+    def prepare_resume(self, timestamp_ms=None):
         """Resume from an explicitly verified matching pose, without a start pulse."""
         if self.input_fault or self.pending_actions:
             raise ValueError('Resolve input delivery before resuming')
         self.vertical_state = 'NEUTRAL'
         self._needs_neutral = False
-        self._skip_next_action = True
+        self._skip_next_action = timestamp_ms is None
+        self._resume_timestamp_ms = timestamp_ms
 
     @property
     def vertical_gap(self):
@@ -175,10 +177,13 @@ class GestureRecognizer:
         if self.pending_actions:
             self.status_message = 'Waiting for input delivery'
             return []
-        if not actions_enabled or self._skip_next_action:
+        if (not actions_enabled or self._skip_next_action
+                or (self._resume_timestamp_ms is not None and timestamp_ms is not None
+                    and timestamp_ms <= self._resume_timestamp_ms)):
             self._skip_next_action = False
             self.vertical_state = 'NEUTRAL'
             return []
+        self._resume_timestamp_ms = None
         if self._needs_neutral:
             if not (self.x_left <= waist_x <= self.x_right and self.y_upper <= waist_y <= self.y_lower):
                 self.status_message = 'Return to neutral before resuming'

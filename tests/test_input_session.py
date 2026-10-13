@@ -29,7 +29,7 @@ class InputSessionTests(unittest.TestCase):
         self.recognizer = GestureRecognizer()
         self.recognizer._apply_profile(CalibrationProfile(.5, .5, .25, .18, .05, .0875, .1375))
 
-    def arm(self, features=None, age=.01):
+    def arm(self, features=None, age=0):
         self.session.command('arm', self.target)
         command, generation, target = self.session.drain_commands()[-1]
         received_ns = now_ns() - int(age * 1e9) if math.isfinite(age) else None
@@ -80,6 +80,23 @@ class InputSessionTests(unittest.TestCase):
         _, generation, target = self.session.drain_commands()[-1]
         self.session.command('pause')
         self.assertFalse(self.session.arm(generation, target, self.recognizer, standing(), now_ns()))
+        self.assertFalse(self.session.allow_input())
+
+    def test_arm_waits_for_observation_captured_after_request(self):
+        old_receipt = now_ns()
+        self.session.command('arm', self.target)
+        _, generation, target = self.session.drain_commands()[-1]
+        self.assertIsNone(self.session.arm(generation, target, self.recognizer, standing(), old_receipt, timestamp_ms=4000))
+        self.assertFalse(self.session.allow_input())
+        self.assertTrue(self.session.arm(generation, target, self.recognizer, standing(), now_ns(), timestamp_ms=4100))
+        self.assertEqual(self.recognizer.recognize(standing(), 4100), [])
+        self.assertEqual(self.recognizer.recognize(standing(y=.3), 4200), ['Jump'])
+
+    def test_pending_arm_expires_without_a_new_observation(self):
+        self.session.command('arm', self.target)
+        _, generation, target = self.session.drain_commands()[-1]
+        self.session._requested_ns = now_ns() - 2_000_000_000
+        self.assertFalse(self.session.arm(generation, target, self.recognizer, None, None))
         self.assertFalse(self.session.allow_input())
 
     def test_target_captured_at_request_cannot_change_before_processing(self):

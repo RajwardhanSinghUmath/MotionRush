@@ -45,7 +45,7 @@ class LatestFrameSlot:
         self.error = context.RawArray('B', 512)
         self.lock = context.Lock()
 
-    def publish(self, frame, timestamp_ms, received_ns):
+    def publish(self, frame, timestamp_ms, received_ns, sequence=None, timeout=None):
         if frame.dtype != np.uint8 or frame.ndim != 3 or frame.shape[2] != 3 or frame.size == 0:
             raise ValueError('Capture must provide an 8-bit BGR image')
         height, width = frame.shape[:2]
@@ -53,12 +53,23 @@ class LatestFrameSlot:
             ratio = min(CAMERA_WIDTH / width, CAMERA_HEIGHT / height)
             frame = cv2.resize(frame, (max(1, int(width * ratio)), max(1, int(height * ratio))))
             height, width = frame.shape[:2]
-        with self.lock:
-            np.frombuffer(self.pixels, dtype=np.uint8)[:frame.size] = frame.reshape(-1)
-            self.metadata[WIDTH], self.metadata[HEIGHT] = width, height
-            self.metadata[RECEIVED_NS], self.metadata[TIMESTAMP_MS] = received_ns, timestamp_ms
-            self.metadata[SEQUENCE] += 1
-            self.metadata[STATE] = RUNNING
+        locked = self.lock.acquire() if timeout is None else self.lock.acquire(timeout=timeout)
+        if not locked:
+            return False
+        try:
+            self.write_locked(frame, timestamp_ms, received_ns, sequence)
+            return True
+        finally:
+            self.lock.release()
+
+    def write_locked(self, frame, timestamp_ms, received_ns, sequence=None):
+        """Publish validated pixels and metadata while the caller holds the lock."""
+        height, width = frame.shape[:2]
+        np.frombuffer(self.pixels, dtype=np.uint8)[:frame.size] = frame.reshape(-1)
+        self.metadata[WIDTH], self.metadata[HEIGHT] = width, height
+        self.metadata[RECEIVED_NS], self.metadata[TIMESTAMP_MS] = received_ns, timestamp_ms
+        self.metadata[SEQUENCE] = self.metadata[SEQUENCE] + 1 if sequence is None else sequence
+        self.metadata[STATE] = RUNNING
 
     def set_state(self, state, message=''):
         encoded = message.encode('utf-8')[:511]

@@ -1,0 +1,204 @@
+{
+  "parent_revision": "1009d85c5751cc803d268d9324a1f80938b960f5",
+  "source_sha256": {
+    "pose/worker.py": "df7b9ed34547d1629abac26e5fdd60ae5ef129ee3110b67fc8afe838f8aca6e4",
+    "camera/camera_stream.py": "e0f1aa40318d8c070cd9abdee39a5b85aa89e0adcba1dda94ff0f83ebfc5bd4c",
+    "camera/device_capture.py": "43bf4fb5b980d3980338e7baacd56199316dcfd28a3ba5be83088f6b6e021f52",
+    "camera/clock.py": "078272087ddac3b00988f14c981c1783de06fe976899718743897bb3b6d8807f",
+    "config/settings.py": "5ebe8b4099c73a23963da830caf13b7ec2c79c189aa3306f4afbece360c08cf6",
+    "evaluation/benchmark_pose_worker.py": "b12f0f01be43d2c93db769536239940e91d4f1ba56032be04465d7332cc60f87"
+  },
+  "model_sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+  "python_version": "3.10.10",
+  "windows_version": "10.0.26200",
+  "checked_at_utc": "2026-10-13T14:05:31.387693+00:00",
+  "conditions": "Model initialization completed before media-FPS-paced capture; first inference included; production capture and pose processes; 5ms polling or declared consumer delay; original source-image correlation; no preview, gestures, keyboard or webcam; receipt age is not exposure age",
+  "runs": [
+    {
+      "file": "eli_wave1.avi",
+      "source_sha256": "4e9671b549dc4c1729d0899bb11e1152504a3707a9b55993c921434e94c4891d",
+      "consumer_delay_ms": 0.0,
+      "initialization_ms": 1372.493,
+      "captured_frames": 125,
+      "submitted_frames": 125,
+      "rejected_submissions": 0,
+      "skipped_before_captured_frames": 0,
+      "fresh_pose_results": 121,
+      "reliable_pose_results": 121,
+      "expired_pose_results": 0,
+      "first_result_sequence": 1,
+      "last_result_sequence": 125,
+      "missing_results_through_last_submitted_sequence": 4,
+      "receipt_to_pose_read": {
+        "median_ms": 46.881,
+        "max_ms": 69.561
+      },
+      "native_inference": {
+        "median_ms": 12.82,
+        "max_ms": 38.617
+      },
+      "parent_capture_submit_result_poll": {
+        "median_ms": 0.18,
+        "max_ms": 1.192
+      },
+      "pose_source_interval_min_ms": 30,
+      "pose_source_interval_max_ms": 79,
+      "pose_shutdown_ms": 268.423,
+      "capture_shutdown_ms": 0.252,
+      "pose_forced_shutdown": true,
+      "capture_forced_shutdown": false,
+      "native_model_close_completed_before_termination": false,
+      "pose_alive_after_shutdown": false,
+      "capture_alive_after_shutdown": false
+    },
+    {
+      "file": "eli_wave1.avi",
+      "source_sha256": "4e9671b549dc4c1729d0899bb11e1152504a3707a9b55993c921434e94c4891d",
+      "consumer_delay_ms": 100.0,
+      "initialization_ms": 1491.015,
+      "captured_frames": 47,
+      "submitted_frames": 47,
+      "rejected_submissions": 0,
+      "skipped_before_captured_frames": 78,
+      "fresh_pose_results": 47,
+      "reliable_pose_results": 47,
+      "expired_pose_results": 0,
+      "first_result_sequence": 1,
+      "last_result_sequence": 125,
+      "missing_results_through_last_submitted_sequence": 78,
+      "receipt_to_pose_read": {
+        "median_ms": 140.737,
+        "max_ms": 187.479
+      },
+      "native_inference": {
+        "median_ms": 14.27,
+        "max_ms": 26.752
+      },
+      "parent_capture_submit_result_poll": {
+        "median_ms": 0.483,
+        "max_ms": 4.531
+      },
+      "pose_source_interval_min_ms": 47,
+      "pose_source_interval_max_ms": 126,
+      "pose_shutdown_ms": 286.13,
+      "capture_shutdown_ms": 0.288,
+      "pose_forced_shutdown": true,
+      "capture_forced_shutdown": false,
+      "native_model_close_completed_before_termination": false,
+      "pose_alive_after_shutdown": false,
+      "capture_alive_after_shutdown": false
+    },
+    {
+      "file": "eli_pjump.avi",
+      "source_sha256": "9f4d7ccfb8ba1ad4b6893d83ae7ad2fc03dadba23b2f5691418a3b8982e4c057",
+      "consumer_delay_ms": 0.0,
+      "initialization_ms": 1674.824,
+      "captured_frames": 42,
+      "submitted_frames": 42,
+      "rejected_submissions": 0,
+      "skipped_before_captured_frames": 0,
+      "fresh_pose_results": 41,
+      "reliable_pose_results": 41,
+      "expired_pose_results": 0,
+      "first_result_sequence": 1,
+      "last_result_sequence": 42,
+      "missing_results_through_last_submitted_sequence": 1,
+      "receipt_to_pose_read": {
+        "median_ms": 46.968,
+        "max_ms": 64.897
+      },
+      "native_inference": {
+        "median_ms": 13.936,
+        "max_ms": 26.581
+      },
+      "parent_capture_submit_result_poll": {
+        "median_ms": 0.171,
+        "max_ms": 0.88
+      },
+      "pose_source_interval_min_ms": 30,
+      "pose_source_interval_max_ms": 78,
+      "pose_shutdown_ms": 279.45,
+      "capture_shutdown_ms": 0.07,
+      "pose_forced_shutdown": true,
+      "capture_forced_shutdown": false,
+      "native_model_close_completed_before_termination": false,
+      "pose_alive_after_shutdown": false,
+      "capture_alive_after_shutdown": false
+    },
+    {
+      "file": "eli_pjump.avi",
+      "source_sha256": "9f4d7ccfb8ba1ad4b6893d83ae7ad2fc03dadba23b2f5691418a3b8982e4c057",
+      "consumer_delay_ms": 100.0,
+      "initialization_ms": 1251.934,
+      "captured_frames": 16,
+      "submitted_frames": 16,
+      "rejected_submissions": 0,
+      "skipped_before_captured_frames": 26,
+      "fresh_pose_results": 16,
+      "reliable_pose_results": 16,
+      "expired_pose_results": 0,
+      "first_result_sequence": 3,
+      "last_result_sequence": 42,
+      "missing_results_through_last_submitted_sequence": 26,
+      "receipt_to_pose_read": {
+        "median_ms": 140.09,
+        "max_ms": 217.282
+      },
+      "native_inference": {
+        "median_ms": 12.431,
+        "max_ms": 23.81
+      },
+      "parent_capture_submit_result_poll": {
+        "median_ms": 0.367,
+        "max_ms": 0.719
+      },
+      "pose_source_interval_min_ms": 31,
+      "pose_source_interval_max_ms": 126,
+      "pose_shutdown_ms": 269.162,
+      "capture_shutdown_ms": 0.053,
+      "pose_forced_shutdown": true,
+      "capture_forced_shutdown": false,
+      "native_model_close_completed_before_termination": false,
+      "pose_alive_after_shutdown": false,
+      "capture_alive_after_shutdown": false
+    }
+  ],
+  "controlled_faults": [
+    {
+      "simulated_model_fault": "initialize",
+      "active_fault_confirmed": true,
+      "watchdog_error": "Pose initialization timed out",
+      "parent_poll": {
+        "median_ms": 0.069,
+        "max_ms": 0.171
+      },
+      "shutdown_ms": 285.222,
+      "native_model_close_completed_before_termination": false,
+      "forced_shutdown": true,
+      "worker_alive_after_shutdown": false
+    },
+    {
+      "simulated_model_fault": "infer",
+      "active_fault_confirmed": true,
+      "watchdog_error": "Pose inference timed out",
+      "parent_poll": {
+        "median_ms": 0.079,
+        "max_ms": 0.177
+      },
+      "shutdown_ms": 271.741,
+      "native_model_close_completed_before_termination": false,
+      "forced_shutdown": true,
+      "worker_alive_after_shutdown": false
+    },
+    {
+      "simulated_model_fault": "close",
+      "active_fault_confirmed": true,
+      "watchdog_error": null,
+      "parent_poll": null,
+      "shutdown_ms": 270.007,
+      "native_model_close_completed_before_termination": false,
+      "forced_shutdown": true,
+      "worker_alive_after_shutdown": false
+    }
+  ]
+}

@@ -1,7 +1,17 @@
 import cv2
 import time
+import math
 
 class UIOverlay:
+    @staticmethod
+    def _drawable(point):
+        try:
+            return (point.visibility is not None and point.visibility > .5
+                    and math.isfinite(point.x) and math.isfinite(point.y)
+                    and 0 <= point.x <= 1 and 0 <= point.y <= 1)
+        except (AttributeError, TypeError):
+            return False
+
     def __init__(self):
         self.prev_time = time.monotonic()
         self.connections = [
@@ -32,7 +42,7 @@ class UIOverlay:
                 if start_idx < len(landmarks) and end_idx < len(landmarks):
                     start_point = landmarks[start_idx]
                     end_point = landmarks[end_idx]
-                    if start_point.visibility > 0.5 and end_point.visibility > 0.5:
+                    if self._drawable(start_point) and self._drawable(end_point):
                         start_px = (int(start_point.x * width), int(start_point.y * height))
                         end_px = (int(end_point.x * width), int(end_point.y * height))
                         cv2.line(frame, start_px, end_px, (180, 100, 80), 2)
@@ -41,7 +51,7 @@ class UIOverlay:
             for idx in [11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]:
                 if idx < len(landmarks):
                     landmark = landmarks[idx]
-                    if landmark.visibility > 0.5:
+                    if self._drawable(landmark):
                         px = (int(landmark.x * width), int(landmark.y * height))
                         cv2.circle(frame, px, 4, (60, 180, 220), -1)
                         

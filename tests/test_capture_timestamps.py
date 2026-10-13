@@ -11,6 +11,7 @@ import main
 from camera.device_capture import CaptureDevice
 from camera.camera_stream import CaptureRead, CapturedFrame
 from pose.estimator import PoseEstimator
+from helpers_pose import ImmediatePoseStub
 
 
 class CaptureTimestampTests(unittest.TestCase):
@@ -83,7 +84,7 @@ class MainTimestampIntegrationTests(unittest.TestCase):
     def test_main_passes_frame_and_timestamp_to_pose_estimator(self):
         frame = np.zeros((8, 8, 3), dtype=np.uint8)
         camera = Mock()
-        camera.read_frame.side_effect = lambda: CaptureRead('frame', CapturedFrame(frame, 125, now_ns(), 1))
+        camera.read_frame.side_effect = lambda **kwargs: CaptureRead('frame', CapturedFrame(frame, 125, now_ns(), 1))
         estimator = Mock()
         estimator.extract_landmarks.return_value = None
         overlay = Mock()
@@ -96,7 +97,7 @@ class MainTimestampIntegrationTests(unittest.TestCase):
             controls.drain_commands.return_value = []
             stack.enter_context(patch('main.InputSession', return_value=controls))
             stack.enter_context(patch('main.CameraStream', return_value=camera))
-            stack.enter_context(patch('main.PoseEstimator', return_value=estimator))
+            stack.enter_context(patch('main.PoseWorker', return_value=ImmediatePoseStub(estimator)))
             recognizer = stack.enter_context(patch('main.GestureRecognizer')).return_value
             recognizer.recognize.return_value = []
             keyboard = stack.enter_context(patch('main.KeyboardBridge'))

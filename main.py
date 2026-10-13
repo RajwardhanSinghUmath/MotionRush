@@ -3,7 +3,8 @@ import ctypes
 import numpy as np
 from contextlib import ExitStack
 from camera.camera_stream import CameraStream
-from pose.estimator import PoseEstimator
+from pose.worker import PoseWorker
+from camera.clock import now_ns
 from control.gesture_recognizer import GestureRecognizer
 from control.keyboard_bridge import KeyboardBridge
 from control.input_session import InputSession
@@ -34,17 +35,17 @@ def main():
         controls.start()
         camera = CameraStream()
         resources.callback(camera.release)
-        pose_estimator = PoseEstimator()
-        resources.callback(pose_estimator.close)
+        pose_worker = PoseWorker()
+        resources.callback(pose_worker.close)
         recognizer = GestureRecognizer()
         keyboard = KeyboardBridge(allow_input=controls.allow_input)
         resources.callback(keyboard.close)
         overlay = UIOverlay()
         resources.callback(cv2.destroyAllWindows)
-        run_controller(camera, pose_estimator, recognizer, keyboard, overlay, controls)
+        run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls)
 
 
-def run_controller(camera, pose_estimator, recognizer, keyboard, overlay, controls):
+def run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls):
 
     # Create compact floating pop-up window
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
@@ -76,33 +77,26 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay, contro
 
     is_pinned = False
     last_image = np.zeros((CAMERA_HEIGHT, CAMERA_WIDTH, 3), dtype=np.uint8)
-    last_results = None
+    last_pose = None
+    pending_arm = None
+    calibration_requested_ns = 0
     have_frame = False
 
     while True:
         if controls.quit_requested:
             break
-        captured_frame = camera.read_frame()
+        captured_frame = camera.read_frame(timeout=0)
         if captured_frame.status in ('error', 'end', 'closed'):
             controls.pause('Capture stopped')
             keyboard.release_all()
             print('[CAPTURE] ' + (captured_frame.message or captured_frame.status))
             break
         packet = captured_frame.packet
-        features = None
-        fresh = captured_frame.status == 'frame' and packet.age_seconds() <= CAPTURE_MAX_AGE_SECONDS
         recognizer.camera_message = ''
-        if fresh:
-            controls.note_frame(packet.received_ns)
+        if captured_frame.status == 'frame' and packet.age_seconds() <= CAPTURE_MAX_AGE_SECONDS:
             last_image = packet.image
-            last_results = pose_estimator.process_frame(packet.image, packet.timestamp_ms)
-            features = pose_estimator.extract_landmarks(last_results)
             have_frame = True
-            fresh = packet.age_seconds() <= CAPTURE_MAX_AGE_SECONDS
-            if not fresh:
-                features = None
-                controls.pause('Processing too slow; input paused')
-                recognizer.camera_message = 'Frame expired during processing'
+            pose_worker.submit(packet)
         elif captured_frame.status == 'stale':
             controls.pause('Camera stalled; input paused')
             recognizer.camera_message = captured_frame.message
@@ -112,27 +106,57 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay, contro
         elif not have_frame:
             recognizer.camera_message = 'Waiting for camera'
 
+        pose_read = pose_worker.read_result()
+        if pose_read.status in ('error', 'closed'):
+            controls.pause('Pose model stopped; input paused')
+            keyboard.release_all()
+            print('[POSE] ' + (pose_read.message or pose_read.status))
+            break
+        new_pose = pose_read.status == 'result'
+        if new_pose:
+            last_pose = pose_read.snapshot
+        fresh = last_pose is not None and last_pose.packet.age_seconds() <= CAPTURE_MAX_AGE_SECONDS
+        if captured_frame.status in ('stale',) or pose_read.status == 'stale':
+            fresh = False
+        features = last_pose.features if fresh else None
+        if new_pose and fresh:
+            controls.note_frame(last_pose.packet.received_ns)
+        if not fresh:
+            if last_pose is not None or pose_read.status == 'stale':
+                controls.pause('Pose source expired; input paused')
+                recognizer.camera_message = 'Pose source frame expired'
+            elif have_frame:
+                recognizer.camera_message = 'Waiting for pose model'
+
         for command, generation, target in controls.drain_commands():
             if command == 'calibrate':
                 recognizer.start_calibration()
+                calibration_requested_ns = now_ns()
+                pending_arm = None
                 keyboard.release_all()
             elif command == 'arm':
-                if keyboard.release_all():
-                    controls.arm(generation, target, recognizer, features, packet.received_ns if fresh else None)
+                pending_arm = (generation, target)
+        if pending_arm is not None and keyboard.release_all():
+            generation, target = pending_arm
+            decision = controls.arm(generation, target, recognizer, features,
+                                   last_pose.packet.received_ns if fresh else None,
+                                   timestamp_ms=last_pose.packet.timestamp_ms if fresh else None)
+            if decision is not None:
+                pending_arm = None
         if controls.quit_requested:
             break
         allowed = controls.allow_input()
-        if allowed and fresh and not features:
+        if allowed and new_pose and fresh and not features:
             controls.pause('Tracking lost; match lane and press F8')
             allowed = False
         if not allowed:
             keyboard.release_all()
 
         actions = []
-        if fresh:
-            actions = recognizer.recognize(features, packet.timestamp_ms, actions_enabled=allowed)
-        elif captured_frame.status == 'stale' or captured_frame.status == 'frame':
-            recognizer.recognize(None, packet.timestamp_ms if packet else None, actions_enabled=False)
+        if new_pose and fresh and last_pose.packet.received_ns >= calibration_requested_ns:
+            actions = recognizer.recognize(features, last_pose.packet.timestamp_ms, actions_enabled=allowed)
+        elif not fresh and (last_pose is not None or captured_frame.status == 'stale' or pose_read.status == 'stale'):
+            recognizer.recognize(None, actions_enabled=False)
         if actions:
             delivery = keyboard.send_action(actions)
             recognizer.acknowledge_delivery(delivery)
@@ -146,7 +170,8 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay, contro
         recognizer.control_message = controls.message
 
         # Render Visuals
-        frame = overlay.draw_skeleton(last_image.copy(), last_results if fresh else None)
+        display_image = last_pose.packet.image if fresh else last_image
+        frame = overlay.draw_skeleton(display_image.copy(), last_pose.results if fresh else None)
         frame = overlay.draw_boundary_markers(frame, recognizer)
         frame = overlay.draw_hud(frame, recognizer)
 
@@ -159,7 +184,7 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay, contro
             is_pinned = True
 
         # Key handling
-        key = cv2.waitKey(1) & 0xFF
+        key = cv2.waitKey(5) & 0xFF
         if key == ord('q') or key == ord('Q'):
             print("[SYSTEM] Quitting application.")
             break
@@ -173,6 +198,8 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay, contro
             controls.pause('Calibration started; focus game and F8 when ready')
             keyboard.release_all()
             recognizer.start_calibration()
+            calibration_requested_ns = now_ns()
+            pending_arm = None
             print("[SYSTEM] Stand upright and still; keep shoulders, hips and a leg visible.")
         elif key == ord('r') or key == ord('R'):
             controls.pause('Lane reset; match lane, focus game and press F8')

@@ -7,7 +7,7 @@ from camera.clock import now_ns
 
 from control.calibration import StandingCalibration
 from control.global_controls import WindowsControls
-from config.settings import CAPTURE_MAX_AGE_SECONDS
+from config.settings import CAPTURE_MAX_AGE_SECONDS, ARM_REQUEST_TIMEOUT_SECONDS
 
 
 class InputSession:
@@ -16,6 +16,7 @@ class InputSession:
         self._lock = threading.RLock()
         self._commands = queue.SimpleQueue()
         self._generation = 0
+        self._requested_ns = now_ns()
         self._armed = False
         self._target = None
         self._quit = False
@@ -41,6 +42,7 @@ class InputSession:
     def pause(self, reason='Paused; match lane, focus game, press F8'):
         with self._lock:
             self._generation += 1
+            self._requested_ns = now_ns()
             self._armed = False
             self._message = reason
 
@@ -67,7 +69,7 @@ class InputSession:
         with self._lock:
             self._last_frame_ns = received_ns
 
-    def arm(self, generation, target, recognizer, features, received_ns):
+    def arm(self, generation, target, recognizer, features, received_ns, timestamp_ms=None):
         with self._lock:
             if generation != self._generation or self._quit or self._closed:
                 return False
@@ -88,6 +90,12 @@ class InputSession:
             if recognizer.pending_actions:
                 self.pause('Resolve pending input before F8')
                 return False
+            if received_ns is None or (isinstance(received_ns, int) and received_ns < self._requested_ns):
+                if (now_ns() - self._requested_ns) / 1e9 > ARM_REQUEST_TIMEOUT_SECONDS:
+                    self.pause('No new standing observation; press F8 when ready')
+                    return False
+                self._message = 'Waiting for standing pose after F8'
+                return None
             age = (now_ns() - received_ns) / 1e9 if isinstance(received_ns, int) else float('inf')
             if (not 0 <= age <= CAPTURE_MAX_AGE_SECONDS or not StandingCalibration._valid_features(features)):
                 self.pause('Stand upright with a reliable fresh pose, then F8')
@@ -101,7 +109,7 @@ class InputSession:
             self._last_frame_ns = received_ns
             self._armed = True
             self._message = 'Armed: ' + target.title[:45]
-            recognizer.prepare_resume()
+            recognizer.prepare_resume(timestamp_ms)
             return True
 
     def check_focus(self):
