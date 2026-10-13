@@ -1,0 +1,39 @@
+{
+  "revision": "9281c3ca167799b372027efc64e240acdc16fc48",
+  "source_sha256": {
+    "camera/camera_stream.py": "8d6ed7fa7189cad4c50d5ea3fc567daad849717b252bcae2ff57a15b35068bc1",
+    "camera/device_capture.py": "43bf4fb5b980d3980338e7baacd56199316dcfd28a3ba5be83088f6b6e021f52",
+    "camera/clock.py": "078272087ddac3b00988f14c981c1783de06fe976899718743897bb3b6d8807f",
+    "config/settings.py": "e7becd6805984b633d4a2c7b193f94280e7fc35f939684f1a599c4ad4e555760",
+    "evaluation/benchmark_capture.py": "b97fe964590c540eb63c3aec31ac04430df70be402802b0e558e9bfbcaa3126f"
+  },
+  "receipt_clock": {
+    "implementation": "QueryPerformanceCounter()",
+    "resolution_seconds": 1e-07
+  },
+  "model_sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+  "python_version": "3.10.10",
+  "windows_version": "10.0.26200",
+  "checked_at_utc": "2026-10-13T11:54:48.851215+00:00",
+  "conditions": "Original recording paced at media FPS through production capture worker; actual pose inference; controlled consumer delay; no webcam or native keyboard input; receipt age is not exposure age",
+  "runs": [
+    {
+      "file": "v_JumpingJack_g01_c01.avi",
+      "source_sha256": "387d09507f2676d915f0d230e311f2cb484cbbd8c7f59cee9d36cd171be26b68",
+      "consumer_delay_ms": 0.0,
+      "observed_frames": 91,
+      "detected_pose_frames": 91,
+      "skipped_before_delivered_frames": 2,
+      "stale_polls": 0,
+      "frames_expired_during_inference": 0,
+      "age_at_read_median_ms": 14.326,
+      "age_at_read_max_ms": 22.673,
+      "inference_median_ms": 27.952,
+      "capture_interval_min_ms": 30,
+      "capture_interval_max_ms": 101,
+      "shutdown_ms": 135.113,
+      "forced_shutdown": false,
+      "worker_alive_after_shutdown": false
+    }
+  ]
+}
