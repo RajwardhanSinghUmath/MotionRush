@@ -21,7 +21,7 @@ def measure(samples):
          patch('pydirectinput.SendInput', return_value=1), \
          patch('pydirectinput.ctypes.windll.user32.GetKeyState', return_value=0), \
          contextlib.redirect_stdout(io.StringIO()):
-        bridge = KeyboardBridge()
+        bridge = KeyboardBridge(allow_input=lambda: True)
         for name, actions in [('single', ['Jump']), ('double', ['Right', 'Right'])]:
             times = []
             for _ in range(samples):

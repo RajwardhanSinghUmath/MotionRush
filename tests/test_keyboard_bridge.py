@@ -22,7 +22,7 @@ class KeyboardBridgeTests(unittest.TestCase):
         ))
         self.sleep = self.patches.enter_context(patch('control.keyboard_bridge.time.sleep'))
         self.patches.enter_context(contextlib.redirect_stdout(io.StringIO()))
-        self.bridge = KeyboardBridge()
+        self.bridge = KeyboardBridge(allow_input=lambda: True)
 
     def test_single_action_avoids_nested_library_pauses(self):
         self.assertTrue(self.bridge.send_action(['Jump']))
@@ -115,6 +115,55 @@ class KeyboardBridgeTests(unittest.TestCase):
         self.assertFalse(self.bridge.send_action('Unknown'))
         self.native_input.assert_not_called()
         self.sleep.assert_not_called()
+
+    def test_bridge_requires_explicit_permission_by_default(self):
+        self.assertFalse(KeyboardBridge().send_action('Jump'))
+        self.native_input.assert_not_called()
+
+    def test_closed_bridge_cannot_inject_and_restores_library_failsafe(self):
+        with patch.object(pydirectinput, 'FAILSAFE', True):
+            bridge = KeyboardBridge(allow_input=lambda: True)
+            self.assertFalse(pydirectinput.FAILSAFE)
+            bridge.close()
+            self.assertTrue(pydirectinput.FAILSAFE)
+            self.assertFalse(bridge.send_action('Jump'))
+        self.native_input.assert_not_called()
+
+    def test_permission_is_checked_again_immediately_before_key_down(self):
+        permission = Mock(side_effect=[True, False])
+        bridge = KeyboardBridge(allow_input=permission)
+        self.assertFalse(bridge.send_action('Jump'))
+        self.native_input.assert_not_called()
+
+    def test_focus_loss_between_strokes_cannot_send_second_down(self):
+        allowed = True
+
+        def sleep(seconds):
+            nonlocal allowed
+            if seconds == INTER_KEY_GAP_SECONDS:
+                allowed = False
+
+        self.sleep.side_effect = sleep
+        bridge = KeyboardBridge(allow_input=lambda: allowed)
+        result = bridge.send_action(['Right', 'Right'])
+        self.assertFalse(result)
+        self.assertEqual(result.completed, ('Right',))
+        self.assertEqual(self.native_input.call_count, 2)
+
+    def test_pause_during_hold_releases_and_reports_uncertainty(self):
+        allowed = True
+
+        def sleep(seconds):
+            nonlocal allowed
+            allowed = False
+
+        self.sleep.side_effect = sleep
+        bridge = KeyboardBridge(allow_input=lambda: allowed)
+        result = bridge.send_action('Jump')
+        self.assertFalse(result)
+        self.assertTrue(result.uncertain)
+        self.assertEqual(result.completed, ())
+        self.assertEqual(self.native_input.call_count, 2)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,26 @@
+{
+  "windows_api_bindings_loaded": true,
+  "pointer_bits": 64,
+  "registered_keys": [
+    "F7",
+    "F8",
+    "F9",
+    "F10"
+  ],
+  "startup_disarmed": true,
+  "native_input_injected": false,
+  "synthetic_pause_message_processed": true,
+  "physical_hotkey_press_tested": false,
+  "webcam_opened": false,
+  "hotkeys_reregistered_after_cleanup": true,
+  "worker_stopped": true,
+  "revision": "4d5535b599f30726e2ef00f7f81b444f053e2931",
+  "source_sha256": {
+    "control/global_controls.py": "f53c757df86b85429cf5d28c441a27b4694e84889e959cd0a5db3347e7107e90",
+    "control/input_session.py": "208d3c814bc205bdb26af35cdbdb8f427427598851d15443214102049f6dc3b7",
+    "evaluation/check_global_controls.py": "fce669fa02dceaf20e27d8ebda8be14cb60b6e54409777c0a7a568ae683bd4bc"
+  },
+  "python_version": "3.10.10",
+  "windows_version": "10.0.26200",
+  "checked_at_utc": "2026-10-13T11:00:31.544406+00:00"
+}

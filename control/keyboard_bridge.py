@@ -7,9 +7,13 @@ from config.settings import (
 )
 
 class KeyboardBridge:
-    def __init__(self):
+    def __init__(self, allow_input=None):
+        self._previous_failsafe = pydirectinput.FAILSAFE
         pydirectinput.FAILSAFE = False
         self._possibly_held = set()
+        self._closed = False
+        # Production construction must supply the explicit session permission.
+        self._allow_input = allow_input if allow_input is not None else lambda: False
 
     def send_action(self, action):
         """
@@ -17,6 +21,8 @@ class KeyboardBridge:
         or a list of actions (e.g. ['Right', 'Right']).
         """
         actions = tuple(action) if isinstance(action, (list, tuple)) else (action,)
+        if self._closed:
+            return DeliveryResult(actions, (), 'Input bridge is closed')
         keys = {'Jump': KEY_UP, 'Squat': KEY_DOWN, 'Left': KEY_LEFT, 'Right': KEY_RIGHT}
         # Validate the entire sequence before injecting any prefix.
         if any(single not in keys for single in actions):
@@ -25,6 +31,8 @@ class KeyboardBridge:
             return DeliveryResult(actions, (), 'Key release required', uncertain=True)
         completed = []
         for index, single_action in enumerate(actions):
+            if not self._allow_input():
+                return DeliveryResult(actions, tuple(completed), 'Target is not armed or focused')
             error = self._press_single(keys[single_action])
             if error:
                 return DeliveryResult(actions, tuple(completed), error, uncertain=True)
@@ -40,11 +48,15 @@ class KeyboardBridge:
         # press(_pause=False) still pauses inside its keyDown/keyUp calls.
         # Control each edge explicitly, always releasing even on failure.
         error = ''
+        if not self._allow_input():
+            return 'Target is not armed or focused'
         self._possibly_held.add(key)
         try:
             downed = pydirectinput.keyDown(key, _pause=False)
             if downed:
                 time.sleep(KEY_HOLD_SECONDS)
+                if not self._allow_input():
+                    error = 'Target was disarmed during key hold'
             else:
                 error = 'Key down was not fully inserted'
         except Exception as exception:
@@ -71,5 +83,11 @@ class KeyboardBridge:
         return not self._possibly_held
 
     def close(self):
-        if not self.release_all():
-            print('[INPUT] Key release failed; check the game before resuming.')
+        if self._closed:
+            return
+        self._closed = True
+        try:
+            if not self.release_all():
+                print('[INPUT] Key release failed; check the game before resuming.')
+        finally:
+            pydirectinput.FAILSAFE = self._previous_failsafe

@@ -22,7 +22,11 @@ class MainDeliveryTests(unittest.TestCase):
         self.stack.enter_context(patch('pydirectinput.FAILSAFE', False))
         self.recognizer = GestureRecognizer()
         self.recognizer._apply_profile(CalibrationProfile(.5, .5, .25, .18, .05, .0875, .1375))
-        self.bridge = KeyboardBridge()
+        self.bridge = KeyboardBridge(allow_input=lambda: True)
+        self.controls = Mock(quit_requested=False, message='Armed: test game')
+        self.controls.allow_input.return_value = True
+        self.controls.drain_commands.return_value = []
+        self.stack.enter_context(patch('main.InputSession', return_value=self.controls))
         frame = np.zeros((8, 8, 3), dtype=np.uint8)
         self.camera = Mock()
         self.camera.read_frame.side_effect = [(frame, 4000), (frame, 4500)]
@@ -81,6 +85,26 @@ class MainDeliveryTests(unittest.TestCase):
         self.assertTrue(self.recognizer.input_fault)
         self.assertEqual(self.native.call_count, 4)
         self.assertEqual(self.recognizer.current_lane, 'CENTER')
+
+    def test_default_disarmed_main_never_dispatches_a_detected_gesture(self):
+        self.controls.allow_input.return_value = False
+        main.main()
+        self.native.assert_not_called()
+        self.overlay.notify_action.assert_not_called()
+        self.assertEqual(self.recognizer.current_lane, 'CENTER')
+
+    def test_tracking_loss_pauses_before_any_native_stroke(self):
+        self.estimator.extract_landmarks.return_value = None
+        main.main()
+        self.controls.pause.assert_called_with('Tracking lost; match lane and press F8')
+        self.native.assert_not_called()
+
+    def test_global_quit_stops_before_capture(self):
+        self.controls.quit_requested = True
+        main.main()
+        self.camera.read_frame.assert_not_called()
+        self.native.assert_not_called()
+        self.controls.close.assert_called_once()
 
 
 if __name__ == '__main__':

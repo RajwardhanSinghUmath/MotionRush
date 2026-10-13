@@ -148,9 +148,12 @@ class UIOverlay:
         cv2.putText(frame, vert_str, (245, 24),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.50, (0, 220, 255), 2, cv2.LINE_AA)
 
-        if not recognizer.is_calibrated or recognizer.waist_position is None or recognizer.status_message != 'Ready':
+        control_message = getattr(recognizer, 'control_message', '')
+        if not recognizer.is_calibrated or recognizer.waist_position is None or recognizer.status_message != 'Ready' or control_message:
             # Wrap the player instruction to keep it readable in the preview.
             message = recognizer.status_message
+            if recognizer.is_calibrated and not recognizer.input_fault and control_message:
+                message = control_message
             instruction_scale = w / 640
             font_size = 0.85 * instruction_scale
             line_height = max(20, round(34 * instruction_scale))
@@ -168,16 +171,16 @@ class UIOverlay:
                             cv2.FONT_HERSHEY_SIMPLEX, font_size, (0, 210, 255), 1, cv2.LINE_AA)
 
         # Action Flash Banner
-        if recognizer.is_calibrated and not recognizer.input_fault and (now - self.action_display_time) < 0.6:
+        if recognizer.is_calibrated and not recognizer.input_fault and getattr(recognizer, 'input_armed', True) and (now - self.action_display_time) < 0.6:
             action_text = f">> {self.last_action_text.upper()} <<"
             cv2.rectangle(frame, (int(w*0.20), 44), (int(w*0.80), 80), (0, 200, 0), -1)
             cv2.putText(frame, action_text, (int(w*0.23), 69),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.70, (0, 0, 0), 2, cv2.LINE_AA)
 
         # Compact hotkeys bottom footer bar
-        cv2.rectangle(frame, (0, h - 22), (w, h), (18, 18, 18), -1)
-        controls_text = "[C] Calibrate | [[ / ]] Gap | [W/S] Lines | [Q] Quit"
-        cv2.putText(frame, controls_text, (8, h - 6),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.35, (170, 170, 170), 1, cv2.LINE_AA)
+        cv2.rectangle(frame, (0, h - 30), (w, h), (18, 18, 18), -1)
+        controls_text = 'F7 Calibrate | F8 Arm | F9 Pause | F10 Quit'
+        cv2.putText(frame, controls_text, (8, h - 9),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.65, (190, 190, 190), 1, cv2.LINE_AA)
 
         return frame

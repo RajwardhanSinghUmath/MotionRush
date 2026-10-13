@@ -88,6 +88,10 @@ class MainTimestampIntegrationTests(unittest.TestCase):
         overlay.draw_boundary_markers.return_value = frame
         overlay.draw_hud.return_value = frame
         with contextlib.ExitStack() as stack:
+            controls = Mock(quit_requested=False)
+            controls.allow_input.return_value = False
+            controls.drain_commands.return_value = []
+            stack.enter_context(patch('main.InputSession', return_value=controls))
             stack.enter_context(patch('main.CameraStream', return_value=camera))
             stack.enter_context(patch('main.PoseEstimator', return_value=estimator))
             recognizer = stack.enter_context(patch('main.GestureRecognizer')).return_value
@@ -103,7 +107,7 @@ class MainTimestampIntegrationTests(unittest.TestCase):
             stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
             main.main()
         estimator.process_frame.assert_called_once_with(frame, 125)
-        recognizer.recognize.assert_called_once_with(None, 125)
+        recognizer.recognize.assert_called_once_with(None, 125, actions_enabled=False)
         keyboard.return_value.send_action.assert_not_called()
         camera.release.assert_called_once_with()
 

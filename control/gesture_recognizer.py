@@ -29,6 +29,15 @@ class GestureRecognizer:
         self.pending_actions = ()
         self._pending_at = None
         self._needs_neutral = False
+        self._skip_next_action = False
+
+    def prepare_resume(self):
+        """Resume from an explicitly verified matching pose, without a start pulse."""
+        if self.input_fault or self.pending_actions:
+            raise ValueError('Resolve input delivery before resuming')
+        self.vertical_state = 'NEUTRAL'
+        self._needs_neutral = False
+        self._skip_next_action = True
 
     @property
     def vertical_gap(self):
@@ -133,7 +142,7 @@ class GestureRecognizer:
             self.last_action = 'Input failed'
             self.status_message = 'Input paused; center game, press R'
 
-    def recognize(self, features, timestamp_ms=None):
+    def recognize(self, features, timestamp_ms=None, actions_enabled=True):
         """Use measured frame time, suppressing actions until calibration completes."""
         now = time.monotonic() if timestamp_ms is None else timestamp_ms / 1000
         if not math.isfinite(now) or now < 0:
@@ -165,6 +174,10 @@ class GestureRecognizer:
             return []
         if self.pending_actions:
             self.status_message = 'Waiting for input delivery'
+            return []
+        if not actions_enabled or self._skip_next_action:
+            self._skip_next_action = False
+            self.vertical_state = 'NEUTRAL'
             return []
         if self._needs_neutral:
             if not (self.x_left <= waist_x <= self.x_right and self.y_upper <= waist_y <= self.y_lower):

@@ -75,6 +75,10 @@ class MainLifecycleTests(unittest.TestCase):
         self.patches = contextlib.ExitStack()
         self.addCleanup(self.patches.close)
         self.patches.enter_context(contextlib.redirect_stdout(io.StringIO()))
+        self.controls = Mock(quit_requested=False)
+        self.controls.allow_input.return_value = False
+        self.controls.drain_commands.return_value = []
+        self.patches.enter_context(patch('main.InputSession', return_value=self.controls))
         self.frame = np.zeros((8, 8, 3), dtype=np.uint8)
         self.camera = Mock()
         self.camera.read_frame.return_value = (self.frame, 28)
@@ -100,6 +104,7 @@ class MainLifecycleTests(unittest.TestCase):
         ))
 
     def assert_cleaned_up(self):
+        self.controls.close.assert_called_once_with()
         self.camera.release.assert_called_once_with()
         self.estimator.close.assert_called_once_with()
         self.destroy.assert_called_once_with()

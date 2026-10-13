@@ -28,3 +28,5 @@ jobs:
         run: python -B -m unittest discover -s tests -v
       - name: Load the actual bundled pose model
         run: python -B test_mp.py
+      - name: Check native global controls without input injection
+        run: python -B -m evaluation.check_global_controls
