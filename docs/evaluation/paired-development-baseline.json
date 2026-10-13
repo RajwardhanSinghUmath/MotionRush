@@ -1,0 +1,209 @@
+{
+  "revision": "7d562e01af9a36ce9370de7f5bf733019083f545",
+  "source_sha256": {
+    "evaluation/replay.py": "f918a11c9aac090f47846a6b0896814b9a3acf5e5299033a3f4229f00cd08026",
+    "evaluation/paired_replay.py": "b6606a9785b2a51a5d515d1dccd8319e6af8d09f350741c3ae3a9c51c7379f5a",
+    "control/gesture_recognizer.py": "dfdc3193321f62534777de209f3bcc05da68967567a5d8eeb24c445250d7a7c2",
+    "control/calibration.py": "dff791880448dcb8fe09d327ff2f1ae547b2aee3b5cac3bcadaca061f187c6f9",
+    "pose/estimator.py": "bec6b18b41187a9742bbfea5ed1e2414f0b7e0fdbb28a86ab881ef987692168c",
+    "config/settings.py": "9522a7201a9bd6d3977cc6fff97d13bfcf48614d08fdf8b703df828394720b68"
+  },
+  "model_sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+  "annotation_sha256": "87cd237bd16d733e49f04953d3015f07fe3a6ab7f33a1447101203bad58d90f5",
+  "split": "development",
+  "subjects": [
+    "daria",
+    "denis",
+    "eli"
+  ],
+  "conditions": "Separate real reference/motion clips; fresh center-lane episode; no keyboard injection",
+  "annotation_scope": "Codex visual review of original jumping-in-place recordings. Broad jump-cycle windows count one Jump each; no other commands expected. These are not independently validated takeoff timestamps or game-latency labels. Reference and motion clips are separately recorded, not a continuous live session.",
+  "episodes": [
+    {
+      "file": "daria_pjump.avi",
+      "subject": "daria",
+      "reference_clip": "daria_wave1.avi",
+      "reference_result": {
+        "file": "daria_wave1.avi",
+        "class": "wave1",
+        "group": "daria",
+        "sha256": "8994b436b5ed40d3c618dee35c4aa07573205433c4a0cbea07c05ff39335228c",
+        "fps": 25.0,
+        "frames": 82,
+        "detected_frames": 82,
+        "accepted_feature_frames": 82,
+        "unreliable_essential_frames": 0,
+        "actions": {},
+        "events": [],
+        "calibration_success": true,
+        "ready_frames": 7,
+        "usable_ready_frames": 7,
+        "reference_mode": "automatic_calibration",
+        "calibration_profile": {
+          "x_center": 0.6812532395124435,
+          "y_center": 0.5603342950344086,
+          "torso_height": 0.12205522507429123,
+          "shoulder_width": 0.06115815043449402,
+          "jump_gap": 0.024411045014858246,
+          "squat_gap": 0.04271932877600193,
+          "lane_half_width": 0.06713037379086018
+        },
+        "final_controller_status": "Ready",
+        "inference_median_ms": 12.08
+      },
+      "motion_result": {
+        "file": "daria_pjump.avi",
+        "class": "pjump",
+        "group": "daria",
+        "sha256": "d16d4e13672c182703b4646db47f880e25f97ac85f2a0b346eee14d19b468c71",
+        "fps": 25.0,
+        "frames": 62,
+        "detected_frames": 62,
+        "accepted_feature_frames": 62,
+        "unreliable_essential_frames": 0,
+        "actions": {
+          "Left": 1,
+          "Jump": 4
+        },
+        "events": [
+          {
+            "timestamp_ms": 0,
+            "action": "Left"
+          },
+          {
+            "timestamp_ms": 160,
+            "action": "Jump"
+          },
+          {
+            "timestamp_ms": 840,
+            "action": "Jump"
+          },
+          {
+            "timestamp_ms": 1440,
+            "action": "Jump"
+          },
+          {
+            "timestamp_ms": 2040,
+            "action": "Jump"
+          }
+        ],
+        "calibration_success": true,
+        "ready_frames": 62,
+        "usable_ready_frames": 62,
+        "reference_mode": "production_reference_profile",
+        "calibration_profile": {
+          "x_center": 0.6812532395124435,
+          "y_center": 0.5603342950344086,
+          "torso_height": 0.12205522507429123,
+          "shoulder_width": 0.06115815043449402,
+          "jump_gap": 0.024411045014858246,
+          "squat_gap": 0.04271932877600193,
+          "lane_half_width": 0.06713037379086018
+        },
+        "final_controller_status": "Ready",
+        "inference_median_ms": 19.22
+      },
+      "reference_alignment": {
+        "x_torso_offset": 0.8689012161232086,
+        "y_torso_offset": 0.133986775098851,
+        "relative_scale_change": 0.015382089155916767,
+        "matched": false,
+        "reason": "Reference and motion clip neutral anchors differ"
+      },
+      "eligible": false,
+      "reason": "Reference and motion clip neutral anchors differ"
+    },
+    {
+      "file": "eli_pjump.avi",
+      "subject": "eli",
+      "reference_clip": "eli_wave1.avi",
+      "reference_result": {
+        "file": "eli_wave1.avi",
+        "class": "wave1",
+        "group": "eli",
+        "sha256": "4e9671b549dc4c1729d0899bb11e1152504a3707a9b55993c921434e94c4891d",
+        "fps": 25.0,
+        "frames": 125,
+        "detected_frames": 125,
+        "accepted_feature_frames": 125,
+        "unreliable_essential_frames": 0,
+        "actions": {},
+        "events": [],
+        "calibration_success": true,
+        "ready_frames": 50,
+        "usable_ready_frames": 50,
+        "reference_mode": "automatic_calibration",
+        "calibration_profile": {
+          "x_center": 0.5786125361919403,
+          "y_center": 0.5372040718793869,
+          "torso_height": 0.14522401243448257,
+          "shoulder_width": 0.07203233242034912,
+          "jump_gap": 0.029044802486896518,
+          "squat_gap": 0.050828404352068896,
+          "lane_half_width": 0.07987320683896543
+        },
+        "final_controller_status": "Ready",
+        "inference_median_ms": 21.77
+      },
+      "motion_result": {
+        "file": "eli_pjump.avi",
+        "class": "pjump",
+        "group": "eli",
+        "sha256": "9f4d7ccfb8ba1ad4b6893d83ae7ad2fc03dadba23b2f5691418a3b8982e4c057",
+        "fps": 25.0,
+        "frames": 42,
+        "detected_frames": 42,
+        "accepted_feature_frames": 42,
+        "unreliable_essential_frames": 0,
+        "actions": {
+          "Jump": 2
+        },
+        "events": [
+          {
+            "timestamp_ms": 360,
+            "action": "Jump"
+          },
+          {
+            "timestamp_ms": 1120,
+            "action": "Jump"
+          }
+        ],
+        "calibration_success": true,
+        "ready_frames": 42,
+        "usable_ready_frames": 42,
+        "reference_mode": "production_reference_profile",
+        "calibration_profile": {
+          "x_center": 0.5786125361919403,
+          "y_center": 0.5372040718793869,
+          "torso_height": 0.14522401243448257,
+          "shoulder_width": 0.07203233242034912,
+          "jump_gap": 0.029044802486896518,
+          "squat_gap": 0.050828404352068896,
+          "lane_half_width": 0.07987320683896543
+        },
+        "final_controller_status": "Ready",
+        "inference_median_ms": 23.2
+      },
+      "reference_alignment": {
+        "x_torso_offset": 0.05736347337065635,
+        "y_torso_offset": 0.09262608368912267,
+        "relative_scale_change": 0.06986899048037887,
+        "matched": true,
+        "reason": "Aligned inspected anchor"
+      },
+      "eligible": true,
+      "metrics": {
+        "true_positive": 2,
+        "false_positive": 0,
+        "false_negative": 2,
+        "precision": 1.0,
+        "recall": 0.5,
+        "unmatched_events": []
+      }
+    }
+  ],
+  "subjects_without_annotations": [
+    "denis"
+  ],
+  "eligible_episodes": 1
+}

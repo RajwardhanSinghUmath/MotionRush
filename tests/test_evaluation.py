@@ -7,10 +7,37 @@ import zipfile
 from unittest.mock import patch
 
 from evaluation.download import download_clip
-from evaluation.replay import summarize_events
+from evaluation.replay import summarize_events, score_motion
+from evaluation.paired_replay import check_reference_alignment
+from control.calibration import CalibrationProfile
 
 
 class EvaluationTests(unittest.TestCase):
+    def test_reference_from_different_standing_position_is_not_scored(self):
+        profile = CalibrationProfile(0.5, 0.5, 0.25, 0.18, 0.05, 0.0875, 0.1375)
+        features = {'hip_center': (0.7, 0.5), 'shoulder_center': (0.7, 0.25),
+                    'torso_height': 0.25, 'shoulder_width': 0.18,
+                    'confidence': 0.9, 'knee_angles': [175, 175]}
+        alignment = check_reference_alignment(profile, [features, features])
+        self.assertFalse(alignment['matched'])
+        features['hip_center'] = (0.5, 0.5)
+        features['shoulder_center'] = (0.5, 0.25)
+        self.assertTrue(check_reference_alignment(profile, [features, features])['matched'])
+
+    def test_disabled_or_unusable_controller_cannot_receive_accuracy_score(self):
+        for result in ({'calibration_success': False, 'usable_ready_frames': 10},
+                       {'calibration_success': True, 'usable_ready_frames': 0}):
+            score = score_motion(result, [])
+            self.assertFalse(score['eligible'])
+            self.assertNotIn('metrics', score)
+
+    def test_calibrated_replay_reports_a_missed_jump(self):
+        result = {'calibration_success': True, 'usable_ready_frames': 40, 'events': []}
+        score = score_motion(result, [{'action': 'Jump', 'start_ms': 100, 'end_ms': 300}])
+        self.assertTrue(score['eligible'])
+        self.assertEqual(score['metrics']['false_negative'], 1)
+        self.assertEqual(score['metrics']['recall'], 0)
+
     def archive_clip(self, member='nested/sample.avi'):
         video = b'example recording'
         stream = io.BytesIO()

@@ -2,19 +2,30 @@
 
 import argparse
 from collections import Counter
+from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
 import statistics
 import subprocess
 import time
-from unittest.mock import patch
 
 import cv2
 
 from control.gesture_recognizer import GestureRecognizer
 from pose.estimator import PoseEstimator
 from evaluation.download import DEFAULT_MANIFEST, download_clip
+
+
+def source_provenance():
+    root = Path(__file__).resolve().parents[1]
+    modules = ('evaluation/replay.py', 'evaluation/paired_replay.py',
+               'control/gesture_recognizer.py', 'control/calibration.py',
+               'pose/estimator.py', 'config/settings.py')
+    return {
+        'revision': subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip(),
+        'source_sha256': {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in modules},
+    }
 
 
 def summarize_events(events, annotations):
@@ -48,7 +59,14 @@ def summarize_events(events, annotations):
     }
 
 
-def replay_clip(clip, path, destination):
+def score_motion(result, annotations):
+    """Report accuracy only when the controller had usable calibrated input."""
+    if not result.get('calibration_success') or result.get('usable_ready_frames', 0) == 0:
+        return {'eligible': False, 'reason': 'No usable calibrated observations; no accuracy score'}
+    return {'eligible': True, 'metrics': summarize_events(result['events'], annotations)}
+
+
+def replay_clip(clip, path, destination, reference_profile=None):
     video = cv2.VideoCapture(str(path))
     estimator = None
     try:
@@ -57,9 +75,17 @@ def replay_clip(clip, path, destination):
             raise ValueError('Unreadable video or invalid FPS: ' + str(path))
         estimator = PoseEstimator()
         recognizer = GestureRecognizer()
-        recognizer.start_calibration()
+        if reference_profile is None:
+            recognizer.start_calibration()
+        else:
+            if not reference_profile.fits_frame():
+                raise ValueError('Reference profile has unusable frame geometry')
+            # Test harness only: seed a profile already obtained by running the
+            # production calibration protocol on the separate reference clip.
+            recognizer._apply_profile(reference_profile)
         frames = detected = accepted = unreliable = 0
         ready_frames = 0
+        usable_ready_frames = 0
         times = []
         events = []
         actions = Counter()
@@ -87,14 +113,10 @@ def replay_clip(clip, path, destination):
                         unreliable += 1
                 if features:
                     accepted += 1
-                # Replay the clock rather than the evaluator's processing speed.
-                # Patch both clocks so old and monotonic-based recognizers compare.
-                now = 1000 + timestamp_ms / 1000
-                with patch('control.gesture_recognizer.time.time', return_value=now), \
-                     patch('control.gesture_recognizer.time.monotonic', return_value=now):
-                    emitted = recognizer.recognize(features)
+                emitted = recognizer.recognize(features, timestamp_ms)
                 actions.update(emitted)
                 ready_frames += recognizer.is_calibrated
+                usable_ready_frames += bool(recognizer.is_calibrated and features)
                 events.extend({'timestamp_ms': timestamp_ms, 'action': action} for action in emitted)
                 row['actions'] = emitted
                 row['features'] = features
@@ -110,6 +132,9 @@ def replay_clip(clip, path, destination):
             'events': events,
             'calibration_success': recognizer.is_calibrated,
             'ready_frames': ready_frames,
+            'usable_ready_frames': usable_ready_frames,
+            'reference_mode': 'production_reference_profile' if reference_profile is not None else 'automatic_calibration',
+            'calibration_profile': asdict(recognizer.calibration_profile) if recognizer.calibration_profile else None,
             'final_controller_status': recognizer.status_message,
             'inference_median_ms': round(statistics.median(times), 2) if times else None,
         }
@@ -131,10 +156,9 @@ def main():
     annotations = json.loads(args.annotations.read_text()) if args.annotations else None
     args.output.mkdir(parents=True, exist_ok=True)
     root = Path(__file__).resolve().parents[1]
-    revision = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
     model = root / 'pose_landmarker_lite.task'
     report = {
-        'revision': revision, 'model_sha256': hashlib.sha256(model.read_bytes()).hexdigest(),
+        **source_provenance(), 'model_sha256': hashlib.sha256(model.read_bytes()).hexdigest(),
         'dataset': manifest['dataset'], 'conditions': 'mirrored playback; no keyboard injection',
         'annotation_status': 'event windows supplied' if annotations else 'unannotated stress test; no accuracy claim',
         'clips': [],
@@ -145,7 +169,7 @@ def main():
         path = download_clip(clip, args.data)
         result = replay_clip(clip, path, args.output)
         if annotations is not None and clip['file'] in annotations:
-            result['event_metrics'] = summarize_events(result['events'], annotations[clip['file']])
+            result['event_score'] = score_motion(result, annotations[clip['file']])
         report['clips'].append(result)
         (args.output / 'report.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
         print(clip['file'], result['frames'], 'frames', result['actions'], flush=True)
