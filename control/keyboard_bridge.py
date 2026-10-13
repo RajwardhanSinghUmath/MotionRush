@@ -33,7 +33,7 @@ class KeyboardBridge:
                 try:
                     time.sleep(INTER_KEY_GAP_SECONDS)
                 except Exception as error:
-                    return DeliveryResult(actions, tuple(completed), str(error))
+                    return DeliveryResult(actions, tuple(completed), str(error) or type(error).__name__)
         return DeliveryResult(actions, tuple(completed))
 
     def _press_single(self, key):

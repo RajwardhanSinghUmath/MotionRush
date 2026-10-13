@@ -85,14 +85,14 @@ class UIOverlay:
         # 2. TWO VERTICAL LINES (LEFT / RIGHT LANES)
         # -------------------------------------------------------------
         # Left Lane Line
-        is_left = (recognizer.current_lane == "LEFT")
+        is_left = (not recognizer.input_uncertain and recognizer.current_lane == "LEFT")
         left_color = (0, 255, 0) if is_left else (150, 150, 150)
         cv2.line(frame, (x_left_px, 0), (x_left_px, h), left_color, 2)
         cv2.putText(frame, "< LEFT", (x_left_px - 60, int(h * 0.35)),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.48, left_color, 1, cv2.LINE_AA)
 
         # Right Lane Line
-        is_right = (recognizer.current_lane == "RIGHT")
+        is_right = (not recognizer.input_uncertain and recognizer.current_lane == "RIGHT")
         right_color = (0, 255, 0) if is_right else (150, 150, 150)
         cv2.line(frame, (x_right_px, 0), (x_right_px, h), right_color, 2)
         cv2.putText(frame, "RIGHT >", (x_right_px + 10, int(h * 0.35)),
@@ -141,10 +141,10 @@ class UIOverlay:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.50, (200, 200, 200), 1, cv2.LINE_AA)
 
         # Status text
-        lane_str = f"LANE: [{recognizer.current_lane}]"
+        lane_str = 'LANE: [CHECK]' if recognizer.input_uncertain else f'LANE: [{recognizer.current_lane}]'
         vert_str = f"VERT: [{recognizer.vertical_state}]"
         cv2.putText(frame, lane_str, (95, 24),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.50, (0, 255, 0), 2, cv2.LINE_AA)
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.50, (0, 210, 255) if recognizer.input_uncertain else (0, 255, 0), 2, cv2.LINE_AA)
         cv2.putText(frame, vert_str, (245, 24),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.50, (0, 220, 255), 2, cv2.LINE_AA)
 
