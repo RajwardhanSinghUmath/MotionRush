@@ -1,7 +1,9 @@
 import cv2
+import math
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
+from config.settings import MIN_LANDMARK_VISIBILITY, MIN_LANDMARK_PRESENCE
 
 class PoseEstimator:
     def __init__(self):
@@ -23,7 +25,7 @@ class PoseEstimator:
         return results
 
     def extract_landmarks(self, results):
-        if not results.pose_landmarks or len(results.pose_landmarks) == 0:
+        if results is None or not getattr(results, 'pose_landmarks', None):
             return None
             
         landmarks = results.pose_landmarks[0]
@@ -40,6 +42,10 @@ class PoseEstimator:
             right_shoulder = landmarks[RIGHT_SHOULDER]
             left_hip = landmarks[LEFT_HIP]
             right_hip = landmarks[RIGHT_HIP]
+
+            essential = (left_shoulder, right_shoulder, left_hip, right_hip)
+            if not all(self._is_reliable(point) for point in essential):
+                return None
             
             # Calculate centers
             shoulder_center_x = (left_shoulder.x + right_shoulder.x) / 2
@@ -58,7 +64,22 @@ class PoseEstimator:
                 'left_shoulder': (left_shoulder.x, left_shoulder.y),
                 'right_shoulder': (right_shoulder.x, right_shoulder.y),
                 'shoulder_width': shoulder_width,
-                'torso_height': torso_height
+                'torso_height': torso_height,
+                'confidence': min(min(p.visibility, p.presence) for p in essential),
             }
         except IndexError:
             return None
+
+    @staticmethod
+    def _is_reliable(point):
+        try:
+            values = (point.x, point.y, point.visibility, point.presence)
+            return (
+                all(math.isfinite(value) for value in values)
+                and 0.0 <= point.x <= 1.0
+                and 0.0 <= point.y <= 1.0
+                and MIN_LANDMARK_VISIBILITY <= point.visibility <= 1.0
+                and MIN_LANDMARK_PRESENCE <= point.presence <= 1.0
+            )
+        except (AttributeError, TypeError):
+            return False

@@ -1,0 +1,98 @@
+{
+  "source": "Cached actual-model outputs from 15 original UCF101 videos; no image perturbation",
+  "counts": [
+    {
+      "file": "v_BodyWeightSquats_g01_c01.jsonl",
+      "frames": 267,
+      "detected": 267,
+      "accepted": 267
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.jsonl",
+      "frames": 102,
+      "detected": 102,
+      "accepted": 102
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.jsonl",
+      "frames": 132,
+      "detected": 132,
+      "accepted": 132
+    },
+    {
+      "file": "v_JumpingJack_g01_c01.jsonl",
+      "frames": 93,
+      "detected": 93,
+      "accepted": 93
+    },
+    {
+      "file": "v_JumpingJack_g02_c01.jsonl",
+      "frames": 63,
+      "detected": 63,
+      "accepted": 63
+    },
+    {
+      "file": "v_JumpingJack_g03_c01.jsonl",
+      "frames": 56,
+      "detected": 56,
+      "accepted": 56
+    },
+    {
+      "file": "v_JumpRope_g01_c01.jsonl",
+      "frames": 257,
+      "detected": 257,
+      "accepted": 257
+    },
+    {
+      "file": "v_JumpRope_g02_c01.jsonl",
+      "frames": 448,
+      "detected": 448,
+      "accepted": 448
+    },
+    {
+      "file": "v_JumpRope_g03_c01.jsonl",
+      "frames": 294,
+      "detected": 294,
+      "accepted": 294
+    },
+    {
+      "file": "v_TaiChi_g01_c01.jsonl",
+      "frames": 168,
+      "detected": 168,
+      "accepted": 168
+    },
+    {
+      "file": "v_TaiChi_g02_c01.jsonl",
+      "frames": 176,
+      "detected": 176,
+      "accepted": 176
+    },
+    {
+      "file": "v_TaiChi_g03_c01.jsonl",
+      "frames": 180,
+      "detected": 180,
+      "accepted": 180
+    },
+    {
+      "file": "v_WalkingWithDog_g01_c01.jsonl",
+      "frames": 240,
+      "detected": 201,
+      "accepted": 201
+    },
+    {
+      "file": "v_WalkingWithDog_g02_c01.jsonl",
+      "frames": 240,
+      "detected": 240,
+      "accepted": 240
+    },
+    {
+      "file": "v_WalkingWithDog_g03_c01.jsonl",
+      "frames": 240,
+      "detected": 40,
+      "accepted": 40
+    }
+  ],
+  "total_frames": 2956,
+  "detected_frames": 2717,
+  "accepted_frames": 2717
+}
