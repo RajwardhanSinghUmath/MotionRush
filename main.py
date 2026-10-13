@@ -1,5 +1,6 @@
 import cv2
 import ctypes
+from contextlib import ExitStack
 from camera.camera_stream import CameraStream
 from pose.estimator import PoseEstimator
 from control.gesture_recognizer import GestureRecognizer
@@ -24,11 +25,19 @@ def pin_window_always_on_top(win_name):
         pass
 
 def main():
-    camera = CameraStream()
-    pose_estimator = PoseEstimator()
-    recognizer = GestureRecognizer()
-    keyboard = KeyboardBridge()
-    overlay = UIOverlay()
+    with ExitStack() as resources:
+        camera = CameraStream()
+        resources.callback(camera.release)
+        pose_estimator = PoseEstimator()
+        resources.callback(pose_estimator.close)
+        recognizer = GestureRecognizer()
+        keyboard = KeyboardBridge()
+        overlay = UIOverlay()
+        resources.callback(cv2.destroyAllWindows)
+        run_controller(camera, pose_estimator, recognizer, keyboard, overlay)
+
+
+def run_controller(camera, pose_estimator, recognizer, keyboard, overlay):
 
     # Create compact floating pop-up window
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
@@ -95,7 +104,13 @@ def main():
         if key == ord('q') or key == ord('Q'):
             print("[SYSTEM] Quitting application.")
             break
-        elif key == ord('c') or key == ord('C'):
+        try:
+            if cv2.getWindowProperty(WINDOW_NAME, cv2.WND_PROP_VISIBLE) < 1:
+                break
+        except cv2.error:
+            # The native window can disappear between display and this check.
+            break
+        if key == ord('c') or key == ord('C'):
             if features:
                 recognizer.calibrate_on_waist(features)
                 print("[SYSTEM] Lines centered directly around your standing waist marker!")
@@ -117,8 +132,8 @@ def main():
             recognizer.nudge_vertical(0.01)
             print("[SYSTEM] Nudged horizontal lines DOWN.")
 
-    camera.release()
-    cv2.destroyAllWindows()
-
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print('[SYSTEM] Interrupted; controller resources released.')

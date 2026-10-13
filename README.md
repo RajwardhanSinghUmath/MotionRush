@@ -4,7 +4,7 @@ MotionRush uses a webcam and the bundled MediaPipe pose model to translate body 
 
 ## Install and run
 
-The controller uses Windows input APIs. Python 3.10 is tested locally; CI checks Windows with Python 3.10 and 3.12. Start in the repository directory, create a virtual environment with `python -m venv .venv`, activate it with `.venv\Scripts\Activate.ps1`, and install with `python -m pip install --require-hashes -r requirements.txt`. Run `python main.py`. The bundled `pose_landmarker_lite.task` model must be present. The current launcher expects the repository as the working directory.
+The controller uses Windows input APIs. Python 3.10 is tested locally; CI checks Windows with Python 3.10 and 3.12. Start in the repository directory, create a virtual environment with `python -m venv .venv`, activate it with `.venv\Scripts\Activate.ps1`, and install with `python -m pip install --require-hashes -r requirements.txt`. Run `python main.py`. The bundled `pose_landmarker_lite.task` model must be present; its path is resolved relative to the application, so launching from another directory also works.
 
 Only `opencv-contrib-python` supplies `cv2` in the locked environment. Avoid installing `opencv-python` or headless variants alongside it. `requirements.in` lists the direct dependencies; regenerate the complete hash-locked dependency set with `uv pip compile --python-version 3.10 --generate-hashes requirements.in -o requirements.txt` after testing dependency changes.
 
@@ -26,6 +26,6 @@ GitHub Actions runs these checks on Windows. A successful check does not establi
 
 Calibration currently uses a single frame, and startup enables threshold rules immediately. Essential shoulder/hip confidence and framing are checked before issuing gesture features. Stable calibration, pause/focus handling, and robust tracking recovery are being developed. Scores, game-over state, and run summaries require a separate game integration.
 
-If the model cannot be found, check the launch directory and bundled asset. If camera capture fails, close other camera applications, check Windows camera access, and confirm the camera index in `CameraStream`. If the game does not respond, confirm keyboard focus and test its arrow-key bindings manually. A small preview may require resizing for readable labels.
+If the model cannot be found, check the bundled asset at the path reported in the error. If camera capture fails, close other camera applications, check Windows camera access, and confirm the camera index in `CameraStream`. If the game does not respond, confirm keyboard focus and test its arrow-key bindings manually. A small preview may require resizing for readable labels. Closing the preview, pressing Q, interrupting the process, or encountering an exception releases the camera, pose detector, and windows; startup failures release resources already acquired.
 
 Model provenance and project licensing still need to be documented before a release. The dependency lock does not establish redistribution rights for the bundled model or external evaluation videos.
