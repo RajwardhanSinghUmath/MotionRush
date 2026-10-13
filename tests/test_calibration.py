@@ -1,6 +1,11 @@
+import json
+from pathlib import Path
+from types import SimpleNamespace
 import unittest
 
+from control.calibration import StandingCalibration
 from control.gesture_recognizer import GestureRecognizer
+from pose.estimator import PoseEstimator
 
 
 def standing(x=0.5, y=0.5, torso=0.25, width=0.18, knees=(175.0, None)):
@@ -112,6 +117,34 @@ class CalibrationTests(unittest.TestCase):
         recognizer = GestureRecognizer()
         with self.assertRaises(ValueError):
             recognizer.recognize(standing(), float('nan'))
+
+    def recorded_samples(self):
+        fixture = json.loads((Path(__file__).with_name('fixtures') / 'calibration_postures.json').read_text())
+        estimator = PoseEstimator.__new__(PoseEstimator)
+        estimator._image_aspect_ratio = fixture['image_aspect_ratio']
+        for sample in fixture['samples']:
+            points = [SimpleNamespace(x=p[0], y=p[1], z=p[2], visibility=p[3], presence=p[4])
+                      for p in sample['landmarks']]
+            features = estimator.extract_landmarks(SimpleNamespace(pose_landmarks=[points] if points else []))
+            yield sample, features
+
+    def test_inspected_real_crouches_cannot_become_a_standing_reference(self):
+        tested = 0
+        for sample, features in self.recorded_samples():
+            if sample['label'] == 'crouched':
+                with self.subTest(file=sample['file'], frame=sample['frame_index']):
+                    self.assertFalse(StandingCalibration._valid_features(features))
+                tested += 1
+        self.assertEqual(tested, 12)
+
+    def test_clear_real_standing_samples_remain_usable(self):
+        tested = 0
+        for sample, features in self.recorded_samples():
+            if sample['label'] == 'standing_candidate' and '_g03_' not in sample['file']:
+                with self.subTest(file=sample['file'], frame=sample['frame_index']):
+                    self.assertTrue(StandingCalibration._valid_features(features))
+                tested += 1
+        self.assertEqual(tested, 7)
 
 
 if __name__ == '__main__':
