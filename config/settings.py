@@ -6,6 +6,10 @@ KEY_DOWN = 'down'
 KEY_LEFT = 'left'
 KEY_RIGHT = 'right'
 
+# Explicit input timing instead of PyDirectInput's nested default pauses.
+KEY_HOLD_SECONDS = 0.02
+INTER_KEY_GAP_SECONDS = 0.03
+
 # Camera settings
 CAMERA_WIDTH = 640
 CAMERA_HEIGHT = 480
