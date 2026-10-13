@@ -149,11 +149,14 @@ class UIOverlay:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.50, (0, 220, 255), 2, cv2.LINE_AA)
 
         control_message = getattr(recognizer, 'control_message', '')
-        if not recognizer.is_calibrated or recognizer.waist_position is None or recognizer.status_message != 'Ready' or control_message:
+        camera_message = getattr(recognizer, 'camera_message', '')
+        if not recognizer.is_calibrated or recognizer.waist_position is None or recognizer.status_message != 'Ready' or control_message or camera_message:
             # Wrap the player instruction to keep it readable in the preview.
             message = recognizer.status_message
             if recognizer.is_calibrated and not recognizer.input_fault and control_message:
                 message = control_message
+            if camera_message:
+                message = camera_message
             instruction_scale = w / 640
             font_size = 0.85 * instruction_scale
             line_height = max(20, round(34 * instruction_scale))

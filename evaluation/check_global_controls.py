@@ -59,7 +59,7 @@ def main():
     root = Path(__file__).resolve().parents[1]
     report['revision'] = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
     report['source_sha256'] = {name: hashlib.sha256((root / name).read_bytes()).hexdigest()
-                             for name in ('control/global_controls.py', 'control/input_session.py', 'evaluation/check_global_controls.py')}
+                             for name in ('control/global_controls.py', 'control/input_session.py', 'camera/clock.py', 'evaluation/check_global_controls.py')}
     report['python_version'] = platform.python_version()
     report['windows_version'] = platform.version()
     report['checked_at_utc'] = datetime.now(timezone.utc).isoformat()

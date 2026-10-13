@@ -1,12 +1,15 @@
 import contextlib
 import io
 import unittest
+import time
+from camera.clock import now_ns
 from unittest.mock import Mock, patch
 
 import numpy as np
 
 import main
-from camera.camera_stream import CameraStream
+from camera.device_capture import CaptureDevice
+from camera.camera_stream import CaptureRead, CapturedFrame
 from pose.estimator import PoseEstimator
 
 
@@ -19,16 +22,16 @@ class CaptureTimestampTests(unittest.TestCase):
         self.patches = contextlib.ExitStack()
         self.addCleanup(self.patches.close)
         self.patches.enter_context(patch(
-            'camera.camera_stream.cv2.VideoCapture', return_value=self.capture,
+            'camera.device_capture.cv2.VideoCapture', return_value=self.capture,
         ))
         self.clock = self.patches.enter_context(patch(
-            'camera.camera_stream.time.monotonic_ns',
+            'camera.device_capture.now_ns',
             side_effect=lambda: self.now_ns,
         ))
         self.mirror = self.patches.enter_context(patch(
-            'camera.camera_stream.cv2.flip', return_value=self.frame,
+            'camera.device_capture.cv2.flip', return_value=self.frame,
         ))
-        self.camera = CameraStream()
+        self.camera = CaptureDevice()
 
     def read_after(self, milliseconds):
         self.now_ns += int(milliseconds * 1_000_000)
@@ -80,7 +83,7 @@ class MainTimestampIntegrationTests(unittest.TestCase):
     def test_main_passes_frame_and_timestamp_to_pose_estimator(self):
         frame = np.zeros((8, 8, 3), dtype=np.uint8)
         camera = Mock()
-        camera.read_frame.return_value = (frame, 125)
+        camera.read_frame.side_effect = lambda: CaptureRead('frame', CapturedFrame(frame, 125, now_ns(), 1))
         estimator = Mock()
         estimator.extract_landmarks.return_value = None
         overlay = Mock()

@@ -1,0 +1,101 @@
+{
+  "revision": "6d591d0b6e690bfc799ad9d5026949a0c85b3b16",
+  "source_sha256": {
+    "camera/camera_stream.py": "b4f8953102f2074a422c060e218ab58fdd66e57600981ea472e29098fd18b285",
+    "camera/device_capture.py": "43bf4fb5b980d3980338e7baacd56199316dcfd28a3ba5be83088f6b6e021f52",
+    "camera/clock.py": "078272087ddac3b00988f14c981c1783de06fe976899718743897bb3b6d8807f",
+    "config/settings.py": "e7becd6805984b633d4a2c7b193f94280e7fc35f939684f1a599c4ad4e555760",
+    "evaluation/benchmark_capture.py": "5a0beab092d304f38576cb03e5821afd82f086a6502c827f36ca960ddf8c0d4d"
+  },
+  "receipt_clock": {
+    "implementation": "QueryPerformanceCounter()",
+    "resolution_seconds": 1e-07
+  },
+  "model_sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+  "python_version": "3.10.10",
+  "windows_version": "10.0.26200",
+  "checked_at_utc": "2026-10-13T11:27:51.289148+00:00",
+  "conditions": "Original recording paced at media FPS through production capture worker; actual pose inference; controlled consumer delay; no webcam or native keyboard input; receipt age is not exposure age",
+  "runs": [
+    {
+      "file": "eli_wave1.avi",
+      "source_sha256": "4e9671b549dc4c1729d0899bb11e1152504a3707a9b55993c921434e94c4891d",
+      "consumer_delay_ms": 0.0,
+      "observed_frames": 114,
+      "detected_pose_frames": 114,
+      "skipped_before_delivered_frames": 11,
+      "stale_polls": 0,
+      "frames_expired_during_inference": 1,
+      "age_at_read_median_ms": 15.009,
+      "age_at_read_max_ms": 17.696,
+      "inference_median_ms": 27.431,
+      "capture_interval_min_ms": 30,
+      "capture_interval_max_ms": 478,
+      "shutdown_ms": 78.0,
+      "forced_shutdown": false,
+      "worker_alive_after_shutdown": false
+    },
+    {
+      "file": "eli_wave1.avi",
+      "source_sha256": "4e9671b549dc4c1729d0899bb11e1152504a3707a9b55993c921434e94c4891d",
+      "consumer_delay_ms": 100.0,
+      "observed_frames": 38,
+      "detected_pose_frames": 38,
+      "skipped_before_delivered_frames": 87,
+      "stale_polls": 0,
+      "frames_expired_during_inference": 0,
+      "age_at_read_median_ms": 30.504,
+      "age_at_read_max_ms": 77.752,
+      "inference_median_ms": 28.312,
+      "capture_interval_min_ms": 78,
+      "capture_interval_max_ms": 172,
+      "shutdown_ms": 0.0,
+      "forced_shutdown": false,
+      "worker_alive_after_shutdown": false
+    },
+    {
+      "file": "eli_pjump.avi",
+      "source_sha256": "9f4d7ccfb8ba1ad4b6893d83ae7ad2fc03dadba23b2f5691418a3b8982e4c057",
+      "consumer_delay_ms": 0.0,
+      "observed_frames": 42,
+      "detected_pose_frames": 42,
+      "skipped_before_delivered_frames": 0,
+      "stale_polls": 0,
+      "frames_expired_during_inference": 0,
+      "age_at_read_median_ms": 14.938,
+      "age_at_read_max_ms": 18.883,
+      "inference_median_ms": 25.296,
+      "capture_interval_min_ms": 30,
+      "capture_interval_max_ms": 48,
+      "shutdown_ms": 93.0,
+      "forced_shutdown": false,
+      "worker_alive_after_shutdown": false
+    },
+    {
+      "file": "eli_pjump.avi",
+      "source_sha256": "9f4d7ccfb8ba1ad4b6893d83ae7ad2fc03dadba23b2f5691418a3b8982e4c057",
+      "consumer_delay_ms": 100.0,
+      "observed_frames": 13,
+      "detected_pose_frames": 13,
+      "skipped_before_delivered_frames": 29,
+      "stale_polls": 0,
+      "frames_expired_during_inference": 0,
+      "age_at_read_median_ms": 31.23,
+      "age_at_read_max_ms": 47.491,
+      "inference_median_ms": 29.69,
+      "capture_interval_min_ms": 110,
+      "capture_interval_max_ms": 157,
+      "shutdown_ms": 0.0,
+      "forced_shutdown": false,
+      "worker_alive_after_shutdown": false
+    }
+  ],
+  "controlled_blocked_read": {
+    "simulated_driver_fault": true,
+    "poll_status": "waiting",
+    "poll_ms": 62.0,
+    "shutdown_ms": 266.0,
+    "forced_shutdown": true,
+    "worker_alive_after_shutdown": false
+  }
+}

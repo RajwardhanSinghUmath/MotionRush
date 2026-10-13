@@ -1,9 +1,11 @@
+from camera.clock import now_ns
 import ctypes
 from ctypes import wintypes
 import os
 import queue
 import threading
 import unittest
+import time
 from unittest.mock import Mock, patch
 
 from control.calibration import CalibrationProfile
@@ -94,7 +96,7 @@ class GlobalControlTests(unittest.TestCase):
                     'knee_angles': [175, 175]}
         session.command('arm', self.backend.foreground())
         _, generation, target = session.drain_commands()[0]
-        self.assertTrue(session.arm(generation, target, recognizer, features, .01))
+        self.assertTrue(session.arm(generation, target, recognizer, features, now_ns()))
         paused = threading.Event()
         original_pause = session.pause
 

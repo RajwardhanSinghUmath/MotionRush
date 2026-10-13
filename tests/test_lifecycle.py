@@ -1,15 +1,18 @@
+from camera.clock import now_ns
 import contextlib
 import io
 import os
 from pathlib import Path
 import tempfile
 import unittest
+import time
 from unittest.mock import Mock, patch
 
 import numpy as np
 
 import main
-from camera.camera_stream import CameraStream
+from camera.device_capture import CaptureDevice
+from camera.camera_stream import CaptureRead, CapturedFrame
 from pose.estimator import PoseEstimator
 
 
@@ -17,23 +20,23 @@ class ResourceTests(unittest.TestCase):
     def test_camera_open_failure_releases_capture(self):
         capture = Mock()
         capture.isOpened.return_value = False
-        with patch('camera.camera_stream.cv2.VideoCapture', return_value=capture):
+        with patch('camera.device_capture.cv2.VideoCapture', return_value=capture):
             with self.assertRaisesRegex(RuntimeError, 'Cannot open camera'):
-                CameraStream()
+                CaptureDevice()
         capture.release.assert_called_once_with()
 
     def test_camera_setup_failure_releases_capture(self):
         capture = Mock()
         capture.set.side_effect = RuntimeError('camera setup failed')
-        with patch('camera.camera_stream.cv2.VideoCapture', return_value=capture):
+        with patch('camera.device_capture.cv2.VideoCapture', return_value=capture):
             with self.assertRaisesRegex(RuntimeError, 'camera setup failed'):
-                CameraStream()
+                CaptureDevice()
         capture.release.assert_called_once_with()
 
     def test_camera_release_is_idempotent(self):
         capture = Mock()
-        with patch('camera.camera_stream.cv2.VideoCapture', return_value=capture):
-            camera = CameraStream()
+        with patch('camera.device_capture.cv2.VideoCapture', return_value=capture):
+            camera = CaptureDevice()
         camera.release()
         camera.release()
         self.assertIsNone(camera.read_frame())
@@ -81,7 +84,7 @@ class MainLifecycleTests(unittest.TestCase):
         self.patches.enter_context(patch('main.InputSession', return_value=self.controls))
         self.frame = np.zeros((8, 8, 3), dtype=np.uint8)
         self.camera = Mock()
-        self.camera.read_frame.return_value = (self.frame, 28)
+        self.camera.read_frame.side_effect = lambda: CaptureRead('frame', CapturedFrame(self.frame, 28, now_ns(), 1))
         self.estimator = Mock()
         self.estimator.extract_landmarks.return_value = None
         self.camera_factory = self.patches.enter_context(patch('main.CameraStream', return_value=self.camera))
@@ -135,7 +138,8 @@ class MainLifecycleTests(unittest.TestCase):
         self.assert_cleaned_up()
 
     def test_failed_capture_releases_all_resources(self):
-        self.camera.read_frame.return_value = None
+        self.camera.read_frame.side_effect = None
+        self.camera.read_frame.return_value = CaptureRead('error', message='Camera failed')
         main.main()
         self.assert_cleaned_up()
 

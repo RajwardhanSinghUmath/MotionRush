@@ -1,7 +1,10 @@
+from camera.clock import now_ns
 import json
 import os
 from pathlib import Path
 import unittest
+import time
+import math
 from unittest.mock import Mock
 
 from control.calibration import CalibrationProfile
@@ -29,7 +32,8 @@ class InputSessionTests(unittest.TestCase):
     def arm(self, features=None, age=.01):
         self.session.command('arm', self.target)
         command, generation, target = self.session.drain_commands()[-1]
-        return self.session.arm(generation, target, self.recognizer, features or standing(), age)
+        received_ns = now_ns() - int(age * 1e9) if math.isfinite(age) else None
+        return self.session.arm(generation, target, self.recognizer, features or standing(), received_ns)
 
     def test_startup_is_disarmed_and_does_not_infer_a_target(self):
         self.assertFalse(self.session.allow_input())
@@ -54,6 +58,13 @@ class InputSessionTests(unittest.TestCase):
         self.assertFalse(self.session.allow_input())
         self.assertTrue(self.arm())
 
+    def test_frame_expiration_revokes_permission_without_a_new_main_frame(self):
+        self.assertTrue(self.arm())
+        self.session.note_frame(now_ns() - 400_000_000)
+        self.assertFalse(self.session.allow_input())
+        self.session.note_frame(now_ns())
+        self.assertFalse(self.session.allow_input())
+
     def test_same_handle_other_process_or_thread_or_title_is_disarmed(self):
         for target in (WindowIdentity(self.target.handle, self.target.process_id + 1, 123, 'Test game'),
                        WindowIdentity(self.target.handle, self.target.process_id, 124, 'Test game'),
@@ -68,14 +79,14 @@ class InputSessionTests(unittest.TestCase):
         self.session.command('arm', self.target)
         _, generation, target = self.session.drain_commands()[-1]
         self.session.command('pause')
-        self.assertFalse(self.session.arm(generation, target, self.recognizer, standing(), .01))
+        self.assertFalse(self.session.arm(generation, target, self.recognizer, standing(), now_ns()))
         self.assertFalse(self.session.allow_input())
 
     def test_target_captured_at_request_cannot_change_before_processing(self):
         self.session.command('arm', self.target)
         _, generation, target = self.session.drain_commands()[-1]
         self.backend.foreground.return_value = WindowIdentity(34, 45, 56, 'Different application')
-        self.assertFalse(self.session.arm(generation, target, self.recognizer, standing(), .01))
+        self.assertFalse(self.session.arm(generation, target, self.recognizer, standing(), now_ns()))
 
     def test_preview_process_cannot_be_armed(self):
         self.target = WindowIdentity(123, os.getpid(), 12, 'MotionRush')

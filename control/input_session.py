@@ -3,9 +3,11 @@
 import os
 import queue
 import threading
+from camera.clock import now_ns
 
 from control.calibration import StandingCalibration
 from control.global_controls import WindowsControls
+from config.settings import CAPTURE_MAX_AGE_SECONDS
 
 
 class InputSession:
@@ -18,6 +20,7 @@ class InputSession:
         self._target = None
         self._quit = False
         self._closed = False
+        self._last_frame_ns = None
         self._message = 'Input disarmed; calibrate, focus game, press F8'
 
     def start(self):
@@ -59,7 +62,12 @@ class InputSession:
             except queue.Empty:
                 return commands
 
-    def arm(self, generation, target, recognizer, features, frame_age):
+    def note_frame(self, received_ns):
+        """Keep acquisition age available to the independent input guard."""
+        with self._lock:
+            self._last_frame_ns = received_ns
+
+    def arm(self, generation, target, recognizer, features, received_ns):
         with self._lock:
             if generation != self._generation or self._quit or self._closed:
                 return False
@@ -80,7 +88,8 @@ class InputSession:
             if recognizer.pending_actions:
                 self.pause('Resolve pending input before F8')
                 return False
-            if (not 0 <= frame_age <= .25 or not StandingCalibration._valid_features(features)):
+            age = (now_ns() - received_ns) / 1e9 if isinstance(received_ns, int) else float('inf')
+            if (not 0 <= age <= CAPTURE_MAX_AGE_SECONDS or not StandingCalibration._valid_features(features)):
                 self.pause('Stand upright with a reliable fresh pose, then F8')
                 return False
             x, y = features['hip_center']
@@ -89,6 +98,7 @@ class InputSession:
                 self.pause('Match expected lane and stand upright, then F8')
                 return False
             self._target = target
+            self._last_frame_ns = received_ns
             self._armed = True
             self._message = 'Armed: ' + target.title[:45]
             recognizer.prepare_resume()
@@ -98,11 +108,13 @@ class InputSession:
         with self._lock:
             if self._armed:
                 try:
-                    matches = self.backend.running and self.backend.foreground() == self._target
+                    age = (now_ns() - self._last_frame_ns) / 1e9
+                    matches = (0 <= age <= CAPTURE_MAX_AGE_SECONDS and self.backend.running
+                               and self.backend.foreground() == self._target)
                 except Exception:
                     matches = False
                 if not matches:
-                    self.pause('Game focus changed; match lane and press F8')
+                    self.pause('Focus or frame freshness lost; match lane and F8')
 
     def allow_input(self):
         with self._lock:

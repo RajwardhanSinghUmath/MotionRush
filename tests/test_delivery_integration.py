@@ -1,11 +1,14 @@
+from camera.clock import now_ns
 import contextlib
 import io
 import unittest
+import time
 from unittest.mock import Mock, patch
 
 import numpy as np
 
 import main
+from camera.camera_stream import CaptureRead, CapturedFrame
 from control.calibration import CalibrationProfile
 from control.gesture_recognizer import GestureRecognizer
 from control.keyboard_bridge import KeyboardBridge
@@ -29,7 +32,8 @@ class MainDeliveryTests(unittest.TestCase):
         self.stack.enter_context(patch('main.InputSession', return_value=self.controls))
         frame = np.zeros((8, 8, 3), dtype=np.uint8)
         self.camera = Mock()
-        self.camera.read_frame.side_effect = [(frame, 4000), (frame, 4500)]
+        timestamps = iter([4000, 4500])
+        self.camera.read_frame.side_effect = lambda: CaptureRead('frame', CapturedFrame(frame, next(timestamps), now_ns(), 1))
         self.estimator = Mock()
         self.estimator.extract_landmarks.return_value = {'hip_center': (.8, .5)}
         self.overlay = Mock()
@@ -105,6 +109,47 @@ class MainDeliveryTests(unittest.TestCase):
         self.camera.read_frame.assert_not_called()
         self.native.assert_not_called()
         self.controls.close.assert_called_once()
+
+    def test_waiting_capture_still_processes_global_quit_without_inference(self):
+        def waiting():
+            self.controls.quit_requested = True
+            return CaptureRead('waiting')
+
+        self.camera.read_frame.side_effect = waiting
+        main.main()
+        self.estimator.process_frame.assert_not_called()
+        self.native.assert_not_called()
+        self.camera.release.assert_called_once()
+
+    def test_frame_expired_during_inference_cannot_create_a_command(self):
+        main.cv2.waitKey.side_effect = [ord('q')]
+        with patch.object(CapturedFrame, 'age_seconds', side_effect=[0, .4]):
+            main.main()
+        self.native.assert_not_called()
+        self.controls.pause.assert_called_with('Processing too slow; input paused')
+        self.assertEqual(self.recognizer.current_lane, 'CENTER')
+
+    def test_stale_capture_is_not_sent_to_model_or_keyboard(self):
+        self.camera.read_frame.side_effect = None
+        self.camera.read_frame.return_value = CaptureRead('stale', message='Camera stalled')
+        main.main()
+        self.estimator.process_frame.assert_not_called()
+        self.native.assert_not_called()
+        self.assertIsNone(self.recognizer.waist_position)
+
+    def test_short_wait_between_frames_does_not_reset_calibration(self):
+        features = {'hip_center': (.5, .5), 'shoulder_center': (.5, .25),
+                    'torso_height': .25, 'shoulder_width': .18, 'confidence': .9,
+                    'knee_angles': [175, 175]}
+        self.recognizer.start_calibration()
+        self.recognizer.recognize(features, 4300, actions_enabled=False)
+        self.estimator.extract_landmarks.return_value = features
+        frame = np.zeros((8, 8, 3), dtype=np.uint8)
+        self.camera.read_frame.side_effect = [CaptureRead('waiting'),
+            CaptureRead('frame', CapturedFrame(frame, 4500, now_ns(), 1))]
+        main.main()
+        self.assertEqual(len(self.recognizer.calibration._samples), 2)
+        self.native.assert_not_called()
 
 
 if __name__ == '__main__':
