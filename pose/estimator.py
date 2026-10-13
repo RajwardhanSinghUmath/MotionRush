@@ -4,7 +4,7 @@ from pathlib import Path
 import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
-from config.settings import MIN_LANDMARK_VISIBILITY, MIN_LANDMARK_PRESENCE
+from config.settings import MIN_LANDMARK_VISIBILITY, MIN_LANDMARK_PRESENCE, CAMERA_WIDTH, CAMERA_HEIGHT
 
 class PoseEstimator:
     def __init__(self, model_path=None):
@@ -28,6 +28,7 @@ class PoseEstimator:
 
     def process_frame(self, frame, timestamp_ms):
         """Estimate pose using the frame's monotonic capture receipt timestamp."""
+        self._image_aspect_ratio = frame.shape[1] / frame.shape[0]
         # MediaPipe needs RGB
         image_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         mp_image = mp.Image(image_format=mp.ImageFormat.SRGB, data=image_rgb)
@@ -78,9 +79,27 @@ class PoseEstimator:
                 'shoulder_width': shoulder_width,
                 'torso_height': torso_height,
                 'confidence': min(min(p.visibility, p.presence) for p in essential),
+                'knee_angles': [self._joint_angle(landmarks, 23, 25, 27),
+                                self._joint_angle(landmarks, 24, 26, 28)],
+                'image_aspect_ratio': getattr(self, '_image_aspect_ratio', CAMERA_WIDTH / CAMERA_HEIGHT),
             }
         except IndexError:
             return None
+
+    def _joint_angle(self, landmarks, hip_index, knee_index, ankle_index):
+        if max(hip_index, knee_index, ankle_index) >= len(landmarks):
+            return None
+        hip, knee, ankle = (landmarks[index] for index in (hip_index, knee_index, ankle_index))
+        if not all(self._is_reliable(point) for point in (hip, knee, ankle)):
+            return None
+        aspect = getattr(self, '_image_aspect_ratio', CAMERA_WIDTH / CAMERA_HEIGHT)
+        upper = ((hip.x - knee.x) * aspect, hip.y - knee.y)
+        lower = ((ankle.x - knee.x) * aspect, ankle.y - knee.y)
+        lengths = math.hypot(*upper) * math.hypot(*lower)
+        if lengths <= 1e-12:
+            return None
+        cosine = (upper[0] * lower[0] + upper[1] * lower[1]) / lengths
+        return math.degrees(math.acos(max(-1.0, min(1.0, cosine))))
 
     @staticmethod
     def _is_reliable(point):

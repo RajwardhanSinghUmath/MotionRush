@@ -54,12 +54,11 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay):
     print("TIPS FOR PLAYING:")
     print("  1. The camera window will float on top of all other windows.")
     print("  2. CLICK ON YOUR SUBWAY SURFERS GAME to give it keyboard focus!")
-    print("  3. Your physical movements will control the game directly.")
+    print("  3. Press C, then stand upright and still for calibration before playing.")
     print("\nLINE POSITIONS:")
-    print("  - Jump Line  : ~0.67 (Where the previous bottom line was)")
-    print("  - Squat Line : ~0.89 (Just above the bottom of the camera frame)")
+    print("  - Jump/Squat/Lane guides are scaled to your standing torso.")
     print("\nHOTKEYS (work when camera is active):")
-    print("  - [C]     : Re-center lines on your waist marker")
+    print("  - [C]     : Start 3-second standing calibration (input stops)")
     print("  - [ or ]  : Decrease / Increase distance between lines")
     print("  - W or S  : Move horizontal lines Up / Down")
     print("  - [R]     : Reset Lane state to Center")
@@ -79,12 +78,10 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay):
         results = pose_estimator.process_frame(frame, timestamp_ms)
         features = pose_estimator.extract_landmarks(results)
 
-        if features:
-            actions = recognizer.recognize(features)
-            
-            if actions:
-                keyboard.send_action(actions)
-                overlay.notify_action(", ".join(actions))
+        actions = recognizer.recognize(features, timestamp_ms)
+        if actions:
+            keyboard.send_action(actions)
+            overlay.notify_action(", ".join(actions))
 
         # Render Visuals
         frame = overlay.draw_skeleton(frame, results)
@@ -111,11 +108,8 @@ def run_controller(camera, pose_estimator, recognizer, keyboard, overlay):
             # The native window can disappear between display and this check.
             break
         if key == ord('c') or key == ord('C'):
-            if features:
-                recognizer.calibrate_on_waist(features)
-                print("[SYSTEM] Lines centered directly around your standing waist marker!")
-            else:
-                print("[SYSTEM] No body detected to center on.")
+            recognizer.start_calibration()
+            print("[SYSTEM] Stand upright and still; keep shoulders, hips and a leg visible.")
         elif key == ord('r') or key == ord('R'):
             recognizer.reset_lane("CENTER")
             print("[SYSTEM] Lane manually reset to CENTER.")

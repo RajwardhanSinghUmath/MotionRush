@@ -57,7 +57,9 @@ def replay_clip(clip, path, destination):
             raise ValueError('Unreadable video or invalid FPS: ' + str(path))
         estimator = PoseEstimator()
         recognizer = GestureRecognizer()
+        recognizer.start_calibration()
         frames = detected = accepted = unreliable = 0
+        ready_frames = 0
         times = []
         events = []
         actions = Counter()
@@ -92,9 +94,12 @@ def replay_clip(clip, path, destination):
                      patch('control.gesture_recognizer.time.monotonic', return_value=now):
                     emitted = recognizer.recognize(features)
                 actions.update(emitted)
+                ready_frames += recognizer.is_calibrated
                 events.extend({'timestamp_ms': timestamp_ms, 'action': action} for action in emitted)
                 row['actions'] = emitted
                 row['features'] = features
+                row['calibrated'] = recognizer.is_calibrated
+                row['controller_status'] = recognizer.status_message
                 stream.write(json.dumps(row, separators=(',', ':')) + '\n')
                 frames += 1
         return {
@@ -103,6 +108,9 @@ def replay_clip(clip, path, destination):
             'detected_frames': detected, 'accepted_feature_frames': accepted,
             'unreliable_essential_frames': unreliable, 'actions': dict(actions),
             'events': events,
+            'calibration_success': recognizer.is_calibrated,
+            'ready_frames': ready_frames,
+            'final_controller_status': recognizer.status_message,
             'inference_median_ms': round(statistics.median(times), 2) if times else None,
         }
     finally:

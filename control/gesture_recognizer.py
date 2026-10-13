@@ -1,103 +1,124 @@
+import math
 import time
+from control.calibration import StandingCalibration
 from config.settings import (
-    DEFAULT_Y_CENTER,
-    VERTICAL_GAP,
-    DEFAULT_X_CENTER,
-    LANE_HALF_WIDTH,
-    ACTION_COOLDOWN,
-    OPPOSITE_VERTICAL_COOLDOWN
+    DEFAULT_Y_CENTER, VERTICAL_GAP, DEFAULT_X_CENTER, LANE_HALF_WIDTH,
+    ACTION_COOLDOWN, OPPOSITE_VERTICAL_COOLDOWN,
 )
+
 
 class GestureRecognizer:
     def __init__(self):
-        # Ready right away with default center boundaries
-        self.is_calibrated = True
-        
-        # Center positions (0.0 to 1.0)
+        self.is_calibrated = False
+        self.calibration = StandingCalibration()
+        self.calibration_profile = None
+        self.status_message = self.calibration.message
         self.y_center = DEFAULT_Y_CENTER
-        self.vertical_gap = VERTICAL_GAP
-        
+        self.jump_gap = self.squat_gap = VERTICAL_GAP
         self.x_center = DEFAULT_X_CENTER
         self.lane_half_width = LANE_HALF_WIDTH
-        
-        # Calculated boundary lines
-        self.y_upper = self.y_center - self.vertical_gap
-        self.y_lower = self.y_center + self.vertical_gap
-        self.x_left = self.x_center - self.lane_half_width
-        self.x_right = self.x_center + self.lane_half_width
-        
-        # States
-        self.vertical_state = "NEUTRAL"   # "UP", "NEUTRAL", "DOWN"
-        self.current_lane = "CENTER"      # "LEFT", "CENTER", "RIGHT"
-        
-        # Timers
-        self.last_up_time = 0.0
-        self.last_down_time = 0.0
-        self.last_horizontal_time = 0.0
-        
-        # Display feedback
-        self.last_action = "None"
-        self.waist_position = None
-        self.calibration_frames = []
-
-    def _recalc_lines(self):
-        self.y_upper = max(0.05, self.y_center - self.vertical_gap)
-        self.y_lower = min(0.95, self.y_center + self.vertical_gap)
-        self.x_left = max(0.05, self.x_center - self.lane_half_width)
-        self.x_right = min(0.95, self.x_center + self.lane_half_width)
-
-    def calibrate_on_waist(self, features):
-        """Sets the center lines directly around player's current standing waist position"""
-        if not features:
-            return
-        hip_x, hip_y = features['hip_center']
-        self.y_center = hip_y
-        self.x_center = hip_x
         self._recalc_lines()
         self.vertical_state = "NEUTRAL"
         self.current_lane = "CENTER"
-        self.last_action = "Centered on Waist"
+        self.last_up_time = self.last_down_time = self.last_horizontal_time = float('-inf')
+        self.last_action = "None"
+        self.waist_position = None
+
+    @property
+    def vertical_gap(self):
+        return (self.jump_gap + self.squat_gap) / 2
+
+    def _recalc_lines(self):
+        self.y_upper = self.y_center - self.jump_gap
+        self.y_lower = self.y_center + self.squat_gap
+        self.x_left = self.x_center - self.lane_half_width
+        self.x_right = self.x_center + self.lane_half_width
+
+    def start_calibration(self):
+        """Disable actions and collect a fresh continuous standing reference."""
+        self.is_calibrated = False
+        self.calibration_profile = None
+        self.calibration.start()
+        self.status_message = self.calibration.message
+        self.vertical_state = "NEUTRAL"
+        self.last_up_time = self.last_down_time = self.last_horizontal_time = float('-inf')
+        self.last_action = "Calibrating"
+        # Calibration does not assert that the external game changed lanes.
+
+    def _apply_profile(self, profile):
+        self.calibration_profile = profile
+        self.x_center, self.y_center = profile.x_center, profile.y_center
+        self.jump_gap, self.squat_gap = profile.jump_gap, profile.squat_gap
+        self.lane_half_width = profile.lane_half_width
+        self._recalc_lines()
+        self.vertical_state = "NEUTRAL"
+        self.is_calibrated = True
+        self.last_action = "Calibrated"
+        self.status_message = "Ready"
+
+    def _place_boundaries(self, x, y, jump, squat, lane):
+        values = (x, y, jump, squat, lane)
+        if not all(math.isfinite(value) for value in values):
+            return False
+        if not (0.05 <= x - lane < x < x + lane <= 0.95
+                and 0.05 <= y - jump < y < y + squat <= 0.95):
+            self.last_action = "Adjustment outside frame"
+            return False
+        self.x_center, self.y_center = x, y
+        self.jump_gap, self.squat_gap, self.lane_half_width = jump, squat, lane
+        self._recalc_lines()
+        return True
 
     def adjust_vertical_gap(self, delta):
-        """Increase or decrease distance between the two horizontal lines"""
-        self.vertical_gap = max(0.02, min(0.25, self.vertical_gap + delta))
-        self._recalc_lines()
-        self.last_action = f"Vertical Gap: {self.vertical_gap * 2:.2f}"
+        if not math.isfinite(delta):
+            return False
+        return self._place_boundaries(
+            self.x_center, self.y_center,
+            max(0.02, min(0.25, self.jump_gap + delta)),
+            max(0.02, min(0.25, self.squat_gap + delta)), self.lane_half_width,
+        )
 
     def nudge_vertical(self, delta):
-        """Move both horizontal lines up or down"""
-        self.y_center = max(0.1, min(0.9, self.y_center + delta))
-        self._recalc_lines()
+        return self._place_boundaries(self.x_center, self.y_center + delta,
+                                      self.jump_gap, self.squat_gap, self.lane_half_width)
 
     def nudge_horizontal(self, delta):
-        """Move both lane lines left or right"""
-        self.x_center = max(0.1, min(0.9, self.x_center + delta))
-        self._recalc_lines()
+        return self._place_boundaries(self.x_center + delta, self.y_center,
+                                      self.jump_gap, self.squat_gap, self.lane_half_width)
 
     def reset_lane(self, lane="CENTER"):
+        if lane not in ("LEFT", "CENTER", "RIGHT"):
+            raise ValueError('Unknown lane')
         self.current_lane = lane
         self.last_action = f"Lane Reset: {lane}"
 
-    def recognize(self, features):
-        """
-        UP / DOWN:
-          - Waist above upper line -> UP key (Jump)
-          - Waist below lower line -> DOWN key (Duck)
-          - Returning between lines -> NO KEY (neutral reset)
-        
-        LEFT / RIGHT:
-          - Step past left line -> LEFT key
-          - Cross back to center -> RIGHT key
-          - Step past right line -> RIGHT key
-          - Cross back to center -> LEFT key
-        """
+    def recognize(self, features, timestamp_ms=None):
+        """Use measured frame time, suppressing actions until calibration completes."""
+        now = time.monotonic() if timestamp_ms is None else timestamp_ms / 1000
+        if not math.isfinite(now) or now < 0:
+            raise ValueError('Frame time must be finite and nonnegative')
         if not features:
+            self.waist_position = None
+            if self.calibration.active:
+                self.calibration.update(None, now)
+                self.status_message = self.calibration.message
+            else:
+                self.status_message = "Tracking lost" if self.is_calibrated else "Press C to calibrate"
             return []
-
         waist_x, waist_y = features['hip_center']
+        if not (math.isfinite(waist_x) and math.isfinite(waist_y)
+                and 0 <= waist_x <= 1 and 0 <= waist_y <= 1):
+            return self.recognize(None, timestamp_ms)
         self.waist_position = (waist_x, waist_y)
+        if not self.is_calibrated:
+            if self.calibration.active:
+                profile = self.calibration.update(features, now)
+                self.status_message = self.calibration.message
+                if profile is not None:
+                    self._apply_profile(profile)
+            return []
+        self.status_message = "Ready"
         actions = []
-        now = time.time()
 
         # =========================================================
         # 1. VERTICAL TRACKING (TWO HORIZONTAL LINES)

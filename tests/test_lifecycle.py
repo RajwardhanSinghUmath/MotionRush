@@ -82,7 +82,8 @@ class MainLifecycleTests(unittest.TestCase):
         self.estimator.extract_landmarks.return_value = None
         self.camera_factory = self.patches.enter_context(patch('main.CameraStream', return_value=self.camera))
         self.pose_factory = self.patches.enter_context(patch('main.PoseEstimator', return_value=self.estimator))
-        self.patches.enter_context(patch('main.GestureRecognizer'))
+        recognizer = self.patches.enter_context(patch('main.GestureRecognizer')).return_value
+        recognizer.recognize.return_value = []
         self.patches.enter_context(patch('main.KeyboardBridge'))
         overlay = self.patches.enter_context(patch('main.UIOverlay')).return_value
         overlay.draw_skeleton.return_value = self.frame

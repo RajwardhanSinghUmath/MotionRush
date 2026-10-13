@@ -90,7 +90,8 @@ class MainTimestampIntegrationTests(unittest.TestCase):
         with contextlib.ExitStack() as stack:
             stack.enter_context(patch('main.CameraStream', return_value=camera))
             stack.enter_context(patch('main.PoseEstimator', return_value=estimator))
-            stack.enter_context(patch('main.GestureRecognizer'))
+            recognizer = stack.enter_context(patch('main.GestureRecognizer')).return_value
+            recognizer.recognize.return_value = []
             keyboard = stack.enter_context(patch('main.KeyboardBridge'))
             stack.enter_context(patch('main.UIOverlay', return_value=overlay))
             stack.enter_context(patch('main.pin_window_always_on_top'))
@@ -102,6 +103,7 @@ class MainTimestampIntegrationTests(unittest.TestCase):
             stack.enter_context(contextlib.redirect_stdout(io.StringIO()))
             main.main()
         estimator.process_frame.assert_called_once_with(frame, 125)
+        recognizer.recognize.assert_called_once_with(None, 125)
         keyboard.return_value.send_action.assert_not_called()
         camera.release.assert_called_once_with()
 

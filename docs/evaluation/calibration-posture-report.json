@@ -1,0 +1,239 @@
+{
+  "condition": "Selected visually inspected frames, not complete live calibration sessions",
+  "samples": [
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "frame_index": 0,
+      "visually_neutral": true,
+      "usable_calibration_sample": true,
+      "knee_angles": [
+        178.49576051904978,
+        177.51236491605638
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "frame_index": 10,
+      "visually_neutral": true,
+      "usable_calibration_sample": true,
+      "knee_angles": [
+        null,
+        173.4546831303037
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "frame_index": 20,
+      "visually_neutral": true,
+      "usable_calibration_sample": true,
+      "knee_angles": [
+        null,
+        171.8301355849167
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "frame_index": 35,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        null,
+        124.29169776353055
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "frame_index": 48,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        null,
+        76.13650302328219
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "frame_index": 60,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        null,
+        142.54199855246026
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "frame_index": 73,
+      "visually_neutral": true,
+      "usable_calibration_sample": true,
+      "knee_angles": [
+        null,
+        179.90989375977114
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g01_c01.avi",
+      "frame_index": 116,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        null,
+        79.0537656973927
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "frame_index": 0,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        173.269037172583,
+        101.275366102366
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "frame_index": 10,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        130.0244287029707,
+        90.03566754579795
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "frame_index": 20,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        139.32543541203762,
+        120.29107026819032
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "frame_index": 37,
+      "visually_neutral": true,
+      "usable_calibration_sample": true,
+      "knee_angles": [
+        171.75373743547271,
+        172.62857930365809
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "frame_index": 46,
+      "visually_neutral": true,
+      "usable_calibration_sample": true,
+      "knee_angles": [
+        175.81031507094704,
+        173.99838722345606
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "frame_index": 55,
+      "visually_neutral": true,
+      "usable_calibration_sample": true,
+      "knee_angles": [
+        172.07058740512392,
+        169.38191396614448
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g02_c01.avi",
+      "frame_index": 73,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        125.68499783144006,
+        79.5629801902322
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "frame_index": 0,
+      "visually_neutral": true,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        null,
+        143.59519485002272
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "frame_index": 10,
+      "visually_neutral": true,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        null,
+        150.22210883335867
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "frame_index": 20,
+      "visually_neutral": true,
+      "usable_calibration_sample": true,
+      "knee_angles": [
+        null,
+        159.1567811271462
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "frame_index": 36,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        64.535344087811,
+        null
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "frame_index": 48,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        null,
+        null
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "frame_index": 71,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        41.433244390350396,
+        null
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "frame_index": 95,
+      "visually_neutral": true,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        null,
+        null
+      ]
+    },
+    {
+      "file": "v_BodyWeightSquats_g03_c01.avi",
+      "frame_index": 119,
+      "visually_neutral": false,
+      "usable_calibration_sample": false,
+      "knee_angles": [
+        62.13497702565129,
+        null
+      ]
+    }
+  ],
+  "neutral_samples": 11,
+  "usable_neutral_samples": 8,
+  "crouch_samples": 12,
+  "incorrectly_usable_crouch_samples": 0
+}

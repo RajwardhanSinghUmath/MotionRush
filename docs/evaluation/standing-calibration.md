@@ -1,0 +1,13 @@
+# Standing calibration
+
+The player presses C and holds a neutral standing pose for at least three seconds. At least thirty reliable samples are required. Movement, unreliable tracking, or gaps over 250 ms restart collection. Commands remain disabled until the reference is accepted. The confirmation frame itself sends no input. Calibration does not silently claim that the external game has moved back to its center lane.
+
+A usable sample needs reliable shoulders and hips, a sufficiently visible torso, and at least one reliable hip/knee/ankle chain. Every reliable knee must appear straight enough for standing; a single apparently straight leg must not override another clearly bent leg. Knee geometry accounts for image aspect ratio. The current posture check uses image-space angles, so oblique views and imperfect leg estimates can prevent calibration. The on-screen instruction asks the player to stand upright and keep a leg visible; a frontal view is recommended.
+
+Threshold distances derive from median neutral torso height and shoulder width. Jump and squat use separate relative distances. The neutral point must fit inside the resulting movement boundaries; off-frame profiles are rejected rather than clamped into a different neutral position. Manual changes that put boundaries outside the usable frame are rejected atomically.
+
+A selected-frame review used continuous actual model inference on three original UCF101 squat recordings. Of eleven visually neutral samples, eight were usable under the posture gate. All twelve inspected crouch samples were rejected. The remaining three neutral samples had ambiguous/projected leg posture or missing usable leg landmarks in the outdoor view. This result is recorded in calibration-posture-report.json; it is not a full calibration-success or gesture-accuracy benchmark.
+
+The unit tests verify the complete timed collection protocol, including interruption, movement, body scale, invalid framing, no startup actions, no single-frame calibration, no crouched reference, and recalibration. Synthetic timed streams prove state-machine invariants; the recorded samples provide real model geometry. Neither replaces live webcam testing or three-second neutral sequences from diverse cameras and players.
+
+Recorded-video replay now explicitly requests calibration at the start of each clip and reports calibration success and ready-frame coverage. A clip that contains continuous exercise without a sufficiently long standing interval can produce no commands; this is not evidence of gesture accuracy. The historical uncalibrated baseline remains historical. Annotated post-calibration event evaluation needs an explicit reference phase, which is a follow-up task.

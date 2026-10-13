@@ -10,11 +10,11 @@ Only `opencv-contrib-python` supplies `cv2` in the locked environment. Avoid ins
 
 ## Using the controller
 
-Use a well-lit area where the camera can see your shoulders and hips. The preview is mirrored. Stand neutrally, focus the preview, and press C to recenter the movement guides. Move above the upper horizontal line to jump, below the lower line to squat, and across the vertical guides to change lanes. Returning from an outer lane to center sends the opposite lane key.
+Use a well-lit area where the camera can see your shoulders and hips. The preview is mirrored. Face the camera with shoulders, hips and at least one leg visible. Focus the preview, press C, and stand upright and still for at least three seconds. Commands are disabled until calibration succeeds; the guides then scale to your standing body dimensions. Move above the upper horizontal line to jump, below the lower line to squat, and across the vertical guides to change lanes. Returning from an outer lane to center sends the opposite lane key.
 
 Click the intended game to give it keyboard focus. The current bridge sends commands to the focused application. The game must accept arrow keys; configuring a mobile emulator or a game-specific input mapping is separate from running MotionRush. The always-on-top preview does not establish game focus.
 
-While the preview has focus, C recenters, [ and ] change the vertical gap, W/S move horizontal guides, R resets the controller's assumed lane to center, and Q exits. Recenter only while standing neutrally and synchronize lane reset with the actual game. Threshold distances and controls live in `config/settings.py`.
+While the preview has focus, C starts a new standing calibration and disables input, [ and ] change the vertical gap, W/S move horizontal guides, R resets the controller's assumed lane to center, and Q exits. Calibrate only while standing neutrally and synchronize lane reset with the actual game. Calibration preserves the controller's known lane rather than claiming the game has reset. Threshold distances and controls live in `config/settings.py`.
 
 ## Verification
 
@@ -24,7 +24,7 @@ GitHub Actions runs these checks on Windows. A successful check does not establi
 
 ## Current limitations and troubleshooting
 
-Calibration currently uses a single frame, and startup enables threshold rules immediately. Essential shoulder/hip confidence and framing are checked before issuing gesture features. Stable calibration, pause/focus handling, and robust tracking recovery are being developed. Scores, game-over state, and run summaries require a separate game integration.
+Calibration requires a continuous stable standing interval and validates torso/leg posture. Essential shoulder/hip confidence and framing are checked before issuing gesture features. Oblique camera views or unreliable leg estimates can prevent calibration; use a frontal, well-lit view. Pause/focus handling and robust tracking recovery are being developed. Scores, game-over state, and run summaries require a separate game integration.
 
 If the model cannot be found, check the bundled asset at the path reported in the error. If camera capture fails, close other camera applications, check Windows camera access, and confirm the camera index in `CameraStream`. If the game does not respond, confirm keyboard focus and test its arrow-key bindings manually. A small preview may require resizing for readable labels. Closing the preview, pressing Q, interrupting the process, or encountering an exception releases the camera, pose detector, and windows; startup failures release resources already acquired.
 

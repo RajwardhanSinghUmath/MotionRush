@@ -62,6 +62,15 @@ class PoseQualityTests(unittest.TestCase):
         del self.points[23].presence
         self.assertIsNone(self.estimator.extract_landmarks(result_with(self.points)))
 
+    def test_knee_angle_accounts_for_image_aspect_ratio(self):
+        # At 320x240 these segments have offsets (-48,-48) and (48,-48).
+        self.points[23].x, self.points[23].y = 0.35, 0.3
+        self.points[25].x, self.points[25].y = 0.5, 0.5
+        self.points[27].x, self.points[27].y = 0.65, 0.3
+        self.estimator._image_aspect_ratio = 4 / 3
+        features = self.estimator.extract_landmarks(result_with(self.points))
+        self.assertAlmostEqual(features['knee_angles'][0], 90.0)
+
     def test_actual_recorded_model_outputs(self):
         fixture = Path(__file__).with_name('fixtures') / 'real_pose_quality.json'
         records = json.loads(fixture.read_text())['samples']
