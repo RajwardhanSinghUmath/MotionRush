@@ -223,6 +223,20 @@ class MainDeliveryTests(unittest.TestCase):
         self.assertTrue(self.recognizer.input_fault)
         self.assertEqual(self.recognizer.pending_actions, ())
 
+    def test_exception_with_active_hold_releases_and_cleans_up(self):
+        self.native.return_value = 1
+        frame = np.zeros((8, 8, 3), dtype=np.uint8)
+        self.camera.read_frame.side_effect = [CaptureRead('frame', CapturedFrame(frame, 4000, now_ns(), 1)),
+                                             RuntimeError('Frame processing failed during delivery')]
+        main.cv2.waitKey.side_effect = [-1]
+        with self.assertRaisesRegex(RuntimeError, 'Frame processing failed during delivery'):
+            main.main()
+        self.assertEqual(self.native.call_count, 2)
+        self.assertTrue(self.recognizer.input_uncertain)
+        self.assertEqual(self.recognizer.pending_actions, ())
+        self.camera.release.assert_called_once()
+        self.estimator.close.assert_called_once()
+
 
 if __name__ == '__main__':
     unittest.main()
