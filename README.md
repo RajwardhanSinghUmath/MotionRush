@@ -20,6 +20,8 @@ While the preview has focus, C starts a new standing calibration and disables in
 
 If native input delivery fails, the controller pauses further commands and displays recovery instructions. A two-stroke lane change updates the expected lane only for completed strokes; a failed stroke can still have affected the game, so this prediction must be checked manually. Center the actual game, focus the preview and press R to synchronize the expected lane. Reset retries any possibly held key release and refuses to resume if release still fails. Return to physical neutral, focus the game and press F8 to arm again. Recalibration does not clear an input failure. Native Windows insertion success does not prove that the game accepted a command.
 
+Key delivery is scheduled while the main loop continues consuming poses and processing preview controls. The configured key holds and gaps are preserved without blocking the preview for the entire sequence. New gestures are not queued behind pending input. Pause, focus/tracking loss, calibration, reset and quit cancel unfinished delivery and release active holds; cancellation during a hold is uncertain and uses the same recovery procedure. [Input scheduling and measurements](docs/input-scheduler.md) describe the behavior and tested limits.
+
 ## Verification
 
 Run `python -B -m unittest discover -s tests -v` for hardware-independent regression tests. Native keyboard injection and the webcam are mocked. Run `python -B test_mp.py` to load the actual model without opening the camera. Run `python -m pip check` to check installed dependencies.

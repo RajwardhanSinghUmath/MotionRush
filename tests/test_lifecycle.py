@@ -92,7 +92,9 @@ class MainLifecycleTests(unittest.TestCase):
         self.pose_factory = self.patches.enter_context(patch('main.PoseWorker', return_value=ImmediatePoseStub(self.estimator)))
         recognizer = self.patches.enter_context(patch('main.GestureRecognizer')).return_value
         recognizer.recognize.return_value = []
-        self.patches.enter_context(patch('main.KeyboardBridge'))
+        keyboard = self.patches.enter_context(patch('main.KeyboardBridge')).return_value
+        keyboard.cancel_action.return_value = None
+        keyboard.poll_action.return_value = None
         overlay = self.patches.enter_context(patch('main.UIOverlay')).return_value
         overlay.draw_skeleton.return_value = self.frame
         overlay.draw_boundary_markers.return_value = self.frame

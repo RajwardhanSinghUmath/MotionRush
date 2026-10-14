@@ -23,6 +23,8 @@ class AsyncPoseIntegrationTests(unittest.TestCase):
         self.recognizer = Mock()
         self.recognizer.recognize.return_value = []
         self.keyboard = Mock()
+        self.keyboard.cancel_action.return_value = None
+        self.keyboard.poll_action.return_value = None
         self.keyboard.release_all.return_value = True
         self.overlay = Mock()
         for name in ('draw_skeleton', 'draw_boundary_markers', 'draw_hud'):
@@ -58,7 +60,7 @@ class AsyncPoseIntegrationTests(unittest.TestCase):
         self.assertEqual([call.args[1] for call in self.recognizer.recognize.call_args_list], [40, 160])
         self.assertEqual(self.controls.note_frame.call_count, 2)
         self.assertEqual([int(call.args[0][0, 0, 0]) for call in self.overlay.draw_skeleton.call_args_list], [1, 1, 4])
-        self.keyboard.send_action.assert_not_called()
+        self.keyboard.begin_action.assert_not_called()
         self.worker.close.assert_called_once()
 
     def test_calibration_ignores_results_captured_before_request(self):
@@ -81,7 +83,7 @@ class AsyncPoseIntegrationTests(unittest.TestCase):
         self.controls.note_frame.assert_not_called()
         self.assertTrue(all(call.args == (None,) for call in self.recognizer.recognize.call_args_list))
         self.assertTrue(all(call.args[1] is None for call in self.overlay.draw_skeleton.call_args_list))
-        self.keyboard.send_action.assert_not_called()
+        self.keyboard.begin_action.assert_not_called()
 
     def test_model_error_releases_input_and_closes_resources(self):
         self.camera.read_frame.return_value = CaptureRead('waiting')
@@ -124,7 +126,7 @@ class AsyncPoseIntegrationTests(unittest.TestCase):
         self.assertLess(time.perf_counter() - before, 2.5)
         self.assertTrue(worker.forced_shutdown)
         self.assertFalse(worker.worker_alive)
-        self.keyboard.send_action.assert_not_called()
+        self.keyboard.begin_action.assert_not_called()
         self.camera.release.assert_called_once()
 
 

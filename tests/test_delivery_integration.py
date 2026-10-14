@@ -3,6 +3,7 @@ import contextlib
 import io
 import unittest
 import time
+import itertools
 from unittest.mock import Mock, patch
 
 import numpy as np
@@ -13,6 +14,7 @@ from control.calibration import CalibrationProfile
 from control.gesture_recognizer import GestureRecognizer
 from control.keyboard_bridge import KeyboardBridge
 from helpers_pose import ImmediatePoseStub
+from test_input_scheduler import FakeClock
 
 
 class MainDeliveryTests(unittest.TestCase):
@@ -26,14 +28,15 @@ class MainDeliveryTests(unittest.TestCase):
         self.stack.enter_context(patch('pydirectinput.FAILSAFE', False))
         self.recognizer = GestureRecognizer()
         self.recognizer._apply_profile(CalibrationProfile(.5, .5, .25, .18, .05, .0875, .1375))
-        self.bridge = KeyboardBridge(allow_input=lambda: True)
+        self.clock = FakeClock()
+        self.bridge = KeyboardBridge(allow_input=lambda: True, clock=self.clock)
         self.controls = Mock(quit_requested=False, message='Armed: test game')
         self.controls.allow_input.return_value = True
         self.controls.drain_commands.return_value = []
         self.stack.enter_context(patch('main.InputSession', return_value=self.controls))
         frame = np.zeros((8, 8, 3), dtype=np.uint8)
         self.camera = Mock()
-        timestamps = iter([4000, 4500])
+        timestamps = itertools.count(4000, 100)
         self.camera.read_frame.side_effect = lambda **kwargs: CaptureRead('frame', CapturedFrame(frame, next(timestamps), now_ns(), 1))
         self.estimator = Mock()
         self.estimator.extract_landmarks.return_value = {'hip_center': (.8, .5)}
@@ -45,9 +48,12 @@ class MainDeliveryTests(unittest.TestCase):
                                ('UIOverlay', self.overlay)):
             self.stack.enter_context(patch('main.' + name, return_value=instance))
         self.stack.enter_context(patch('main.pin_window_always_on_top'))
+        def key():
+            self.clock.advance_ms(50)
+            return -1 if self.clock.ns < 300_000_000 else ord('q')
         self.stack.enter_context(patch.multiple(
             'main.cv2', namedWindow=Mock(), resizeWindow=Mock(), moveWindow=Mock(),
-            setWindowProperty=Mock(), imshow=Mock(), waitKey=Mock(side_effect=[-1, ord('q')]),
+            setWindowProperty=Mock(), imshow=Mock(), waitKey=Mock(side_effect=lambda timeout: key()),
             getWindowProperty=Mock(return_value=1), destroyAllWindows=Mock()))
 
     def test_partial_double_lane_failure_pauses_main_and_never_retries(self):
@@ -85,7 +91,10 @@ class MainDeliveryTests(unittest.TestCase):
 
     def test_reset_cannot_resume_when_release_still_fails(self):
         self.native.side_effect = [1, 0, 0, 1]
-        main.cv2.waitKey.side_effect = [ord('r'), ord('q')]
+        def key(timeout):
+            self.clock.advance_ms(50)
+            return {50: -1, 100: ord('r'), 150: ord('q')}[self.clock.ns // 1_000_000]
+        main.cv2.waitKey.side_effect = key
         main.main()
         self.assertTrue(self.recognizer.input_fault)
         self.assertEqual(self.native.call_count, 4)
@@ -148,9 +157,71 @@ class MainDeliveryTests(unittest.TestCase):
         frame = np.zeros((8, 8, 3), dtype=np.uint8)
         self.camera.read_frame.side_effect = [CaptureRead('waiting'),
             CaptureRead('frame', CapturedFrame(frame, 4500, now_ns(), 1))]
+        main.cv2.waitKey.side_effect = [-1, ord('q')]
         main.main()
         self.assertEqual(len(self.recognizer.calibration._samples), 2)
         self.native.assert_not_called()
+
+    def test_multi_key_sequence_keeps_consuming_pose_results_during_hold_and_gap(self):
+        self.recognizer.reset_lane('LEFT')
+        self.estimator.extract_landmarks.return_value = {'hip_center': (.8, .4)}
+        self.native.return_value = 1
+        def key(timeout):
+            self.clock.advance_ms(5)
+            return ord('q') if self.clock.ns >= 125_000_000 else -1
+        main.cv2.waitKey.side_effect = key
+        main.main()
+        self.assertGreaterEqual(self.estimator.process_frame.call_count, 25)
+        self.assertEqual(self.native.call_count, 6)
+        self.assertEqual(self.recognizer.current_lane, 'RIGHT')
+        self.overlay.notify_action.assert_called_once_with('Jump, Right, Right')
+
+    def test_quit_during_hold_releases_and_acknowledges_uncertain_stroke(self):
+        main.cv2.waitKey.side_effect = [ord('q')]
+        self.native.return_value = 1
+        main.main()
+        self.assertEqual(self.native.call_count, 2)
+        self.assertTrue(self.recognizer.input_fault)
+        self.assertTrue(self.recognizer.input_uncertain)
+        self.assertEqual(self.recognizer.pending_actions, ())
+        self.assertEqual(self.recognizer.current_lane, 'CENTER')
+
+    def test_quit_between_strokes_commits_completed_lane_step_only(self):
+        self.recognizer.reset_lane('LEFT')
+        self.native.return_value = 1
+        keys = iter([-1, ord('q')])
+        def key(timeout):
+            self.clock.advance_ms(50)
+            return next(keys)
+        main.cv2.waitKey.side_effect = key
+        main.main()
+        self.assertEqual(self.native.call_count, 2)
+        self.assertEqual(self.recognizer.current_lane, 'CENTER')
+        self.assertTrue(self.recognizer.input_fault)
+        self.assertFalse(self.recognizer.input_uncertain)
+        self.assertEqual(self.recognizer.pending_actions, ())
+
+    def test_global_pause_cancels_active_hold_before_next_down(self):
+        self.native.return_value = 1
+        def key(timeout):
+            self.controls.allow_input.return_value = False
+            self.clock.advance_ms(5)
+            return -1 if self.clock.ns == 5_000_000 else ord('q')
+        main.cv2.waitKey.side_effect = key
+        main.main()
+        self.assertEqual(self.native.call_count, 2)
+        self.assertTrue(self.recognizer.input_fault)
+        self.assertTrue(self.recognizer.input_uncertain)
+        self.assertEqual(self.recognizer.pending_actions, ())
+
+    def test_calibration_cancels_and_acknowledges_before_resetting_recognizer(self):
+        self.native.return_value = 1
+        main.cv2.waitKey.side_effect = [ord('c'), ord('q')]
+        main.main()
+        self.assertEqual(self.native.call_count, 2)
+        self.assertFalse(self.recognizer.is_calibrated)
+        self.assertTrue(self.recognizer.input_fault)
+        self.assertEqual(self.recognizer.pending_actions, ())
 
 
 if __name__ == '__main__':

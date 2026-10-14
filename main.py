@@ -8,6 +8,7 @@ from camera.clock import now_ns
 from control.gesture_recognizer import GestureRecognizer
 from control.keyboard_bridge import KeyboardBridge
 from control.input_session import InputSession
+from control.delivery import DeliveryResult
 from ui.overlay import UIOverlay
 from config.settings import (WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_POS_X, WINDOW_POS_Y,
                              CAMERA_WIDTH, CAMERA_HEIGHT, CAPTURE_MAX_AGE_SECONDS)
@@ -46,6 +47,28 @@ def main():
 
 
 def run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls):
+    try:
+        _run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls)
+    finally:
+        delivery = keyboard.cancel_action('Controller stopped during delivery')
+        if isinstance(delivery, DeliveryResult):
+            recognizer.acknowledge_delivery(delivery)
+
+
+def _run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls):
+
+    def finish_delivery(delivery):
+        if delivery is None:
+            return
+        recognizer.acknowledge_delivery(delivery)
+        if delivery:
+            overlay.notify_action(', '.join(delivery.completed))
+        else:
+            controls.pause('Input failure; center game, focus preview, press R')
+            print(f'[INPUT] Paused after delivery failure: {delivery.error}')
+
+    def cancel_delivery(reason):
+        finish_delivery(keyboard.cancel_action(reason))
 
     # Create compact floating pop-up window
     cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_NORMAL)
@@ -128,13 +151,24 @@ def run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls)
             elif have_frame:
                 recognizer.camera_message = 'Waiting for pose model'
 
+        allowed = controls.allow_input()
+        if allowed and new_pose and fresh and not features:
+            controls.pause('Tracking lost; match lane and press F8')
+            allowed = False
+        if not allowed:
+            cancel_delivery('Input paused during delivery')
+            keyboard.release_all()
+        finish_delivery(keyboard.poll_action())
+
         for command, generation, target in controls.drain_commands():
             if command == 'calibrate':
+                cancel_delivery('Calibration requested during delivery')
                 recognizer.start_calibration()
                 calibration_requested_ns = now_ns()
                 pending_arm = None
                 keyboard.release_all()
             elif command == 'arm':
+                cancel_delivery('Arming requested during delivery')
                 pending_arm = (generation, target)
         if pending_arm is not None and keyboard.release_all():
             generation, target = pending_arm
@@ -146,10 +180,8 @@ def run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls)
         if controls.quit_requested:
             break
         allowed = controls.allow_input()
-        if allowed and new_pose and fresh and not features:
-            controls.pause('Tracking lost; match lane and press F8')
-            allowed = False
         if not allowed:
+            cancel_delivery('Input paused during delivery')
             keyboard.release_all()
 
         actions = []
@@ -158,13 +190,7 @@ def run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls)
         elif not fresh and (last_pose is not None or captured_frame.status == 'stale' or pose_read.status == 'stale'):
             recognizer.recognize(None, actions_enabled=False)
         if actions:
-            delivery = keyboard.send_action(actions)
-            recognizer.acknowledge_delivery(delivery)
-            if delivery:
-                overlay.notify_action(', '.join(delivery.completed))
-            else:
-                controls.pause('Input failure; center game, focus preview, press R')
-                print(f'[INPUT] Paused after delivery failure: {delivery.error}')
+            finish_delivery(keyboard.begin_action(actions))
 
         recognizer.input_armed = controls.allow_input()
         recognizer.control_message = controls.message
@@ -196,6 +222,7 @@ def run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls)
             break
         if key == ord('c') or key == ord('C'):
             controls.pause('Calibration started; focus game and F8 when ready')
+            cancel_delivery('Calibration requested during delivery')
             keyboard.release_all()
             recognizer.start_calibration()
             calibration_requested_ns = now_ns()
@@ -203,6 +230,7 @@ def run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls)
             print("[SYSTEM] Stand upright and still; keep shoulders, hips and a leg visible.")
         elif key == ord('r') or key == ord('R'):
             controls.pause('Lane reset; match lane, focus game and press F8')
+            cancel_delivery('Lane reset during delivery')
             if keyboard.release_all():
                 recognizer.reset_lane("CENTER")
                 print('[SYSTEM] Expected lane reset to CENTER; match the actual game before resuming.')
@@ -210,18 +238,22 @@ def run_controller(camera, pose_worker, recognizer, keyboard, overlay, controls)
                 print('[INPUT] Reset refused: key release still failing.')
         elif key == ord('['):
             controls.pause('Guides changed; match lane and press F8')
+            cancel_delivery('Guides changed during delivery')
             recognizer.adjust_vertical_gap(-0.01)
             print(f"[SYSTEM] Decreased line gap: {recognizer.vertical_gap*2:.2f}")
         elif key == ord(']'):
             controls.pause('Guides changed; match lane and press F8')
+            cancel_delivery('Guides changed during delivery')
             recognizer.adjust_vertical_gap(0.01)
             print(f"[SYSTEM] Increased line gap: {recognizer.vertical_gap*2:.2f}")
         elif key == ord('w') or key == ord('W'):
             controls.pause('Guides changed; match lane and press F8')
+            cancel_delivery('Guides changed during delivery')
             recognizer.nudge_vertical(-0.01)
             print("[SYSTEM] Nudged horizontal lines UP.")
         elif key == ord('s') or key == ord('S'):
             controls.pause('Guides changed; match lane and press F8')
+            cancel_delivery('Guides changed during delivery')
             recognizer.nudge_vertical(0.01)
             print("[SYSTEM] Nudged horizontal lines DOWN.")
 

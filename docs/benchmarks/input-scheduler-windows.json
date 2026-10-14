@@ -1,0 +1,257 @@
+{
+  "parent_revision": "87aeb0927ddd2f2032b390476513da57a0f32aa3",
+  "source_sha256": {
+    "control/keyboard_bridge.py": "f90e7292465fbdca906cf13b0a2f0af0ee70dfe16cda8eafa1bfc918d382cfaf",
+    "main.py": "bb0cff2529e2d78853ad18f5b4f6a3c7c17fda65fef07ea310967b50c735085e",
+    "config/settings.py": "5ebe8b4099c73a23963da830caf13b7ec2c79c189aa3306f4afbece360c08cf6",
+    "pose/worker.py": "df7b9ed34547d1629abac26e5fdd60ae5ef129ee3110b67fc8afe838f8aca6e4",
+    "camera/camera_stream.py": "e0f1aa40318d8c070cd9abdee39a5b85aa89e0adcba1dda94ff0f83ebfc5bd4c",
+    "camera/device_capture.py": "43bf4fb5b980d3980338e7baacd56199316dcfd28a3ba5be83088f6b6e021f52",
+    "camera/clock.py": "078272087ddac3b00988f14c981c1783de06fe976899718743897bb3b6d8807f",
+    "evaluation/benchmark_input_scheduler.py": "b0f6f9fa15e62eadbf30e858ab2f8bfa2a74bbfd75cbc042d9a62b0d021069f7",
+    "evaluation/benchmark_pose_worker.py": "b12f0f01be43d2c93db769536239940e91d4f1ba56032be04465d7332cc60f87"
+  },
+  "model_sha256": "59929e1d1ee95287735ddd833b19cf4ac46d29bc7afddbbf6753c459690d574a",
+  "python_version": "3.10.10",
+  "windows_version": "10.0.26200",
+  "checked_at_utc": "2026-10-14T02:23:09.372514+00:00",
+  "native_input_mocked": true,
+  "timing_waits_real": true,
+  "key_hold_seconds": 0.02,
+  "inter_key_gap_seconds": 0.03,
+  "conditions": "No concurrent regression work; real PyDirectInput event construction with SendInput mocked; nominal 5ms polling. Recording runs initialize model before playback, use original checksum-verified media at its FPS through production capture/pose workers, and insert a synthetic triple-key workload at the first available result at or after each 25-source-frame boundary. Pose receipt age guards delivery. No preview, physical camera, gesture classification or live game.",
+  "recordings": [
+    {
+      "file": "eli_wave1.avi",
+      "source_sha256": "4e9671b549dc4c1729d0899bb11e1152504a3707a9b55993c921434e94c4891d",
+      "mode": "blocking",
+      "model_initialization_ms": 1826.793,
+      "captured_frames": 108,
+      "skipped_before_captured_frames": 17,
+      "fresh_pose_results": 102,
+      "expired_pose_results": 0,
+      "receipt_to_pose_read": {
+        "median_ms": 46.917,
+        "max_ms": 202.468
+      },
+      "parent_capture_pose_input_iteration": {
+        "median_ms": 0.21,
+        "max_ms": 157.985
+      },
+      "synthetic_sequences_completed": 5,
+      "synthetic_dispatches": [
+        {
+          "source_sequence": 1,
+          "call_ms": 155.875
+        },
+        {
+          "source_sequence": 26,
+          "call_ms": 154.937
+        },
+        {
+          "source_sequence": 51,
+          "call_ms": 155.541
+        },
+        {
+          "source_sequence": 76,
+          "call_ms": 156.054
+        },
+        {
+          "source_sequence": 101,
+          "call_ms": 157.522
+        }
+      ]
+    },
+    {
+      "file": "eli_wave1.avi",
+      "source_sha256": "4e9671b549dc4c1729d0899bb11e1152504a3707a9b55993c921434e94c4891d",
+      "mode": "scheduled",
+      "model_initialization_ms": 1268.627,
+      "captured_frames": 125,
+      "skipped_before_captured_frames": 0,
+      "fresh_pose_results": 123,
+      "expired_pose_results": 0,
+      "receipt_to_pose_read": {
+        "median_ms": 46.859,
+        "max_ms": 63.988
+      },
+      "parent_capture_pose_input_iteration": {
+        "median_ms": 0.211,
+        "max_ms": 0.993
+      },
+      "synthetic_sequences_completed": 5,
+      "synthetic_dispatches": [
+        {
+          "source_sequence": 1,
+          "call_ms": 0.125
+        },
+        {
+          "source_sequence": 26,
+          "call_ms": 0.212
+        },
+        {
+          "source_sequence": 51,
+          "call_ms": 0.166
+        },
+        {
+          "source_sequence": 76,
+          "call_ms": 0.159
+        },
+        {
+          "source_sequence": 101,
+          "call_ms": 0.177
+        }
+      ]
+    },
+    {
+      "file": "eli_pjump.avi",
+      "source_sha256": "9f4d7ccfb8ba1ad4b6893d83ae7ad2fc03dadba23b2f5691418a3b8982e4c057",
+      "mode": "blocking",
+      "model_initialization_ms": 1351.113,
+      "captured_frames": 36,
+      "skipped_before_captured_frames": 6,
+      "fresh_pose_results": 34,
+      "expired_pose_results": 0,
+      "receipt_to_pose_read": {
+        "median_ms": 46.93,
+        "max_ms": 188.566
+      },
+      "parent_capture_pose_input_iteration": {
+        "median_ms": 0.175,
+        "max_ms": 157.605
+      },
+      "synthetic_sequences_completed": 2,
+      "synthetic_dispatches": [
+        {
+          "source_sequence": 1,
+          "call_ms": 156.401
+        },
+        {
+          "source_sequence": 26,
+          "call_ms": 157.238
+        }
+      ]
+    },
+    {
+      "file": "eli_pjump.avi",
+      "source_sha256": "9f4d7ccfb8ba1ad4b6893d83ae7ad2fc03dadba23b2f5691418a3b8982e4c057",
+      "mode": "scheduled",
+      "model_initialization_ms": 1344.492,
+      "captured_frames": 42,
+      "skipped_before_captured_frames": 0,
+      "fresh_pose_results": 41,
+      "expired_pose_results": 0,
+      "receipt_to_pose_read": {
+        "median_ms": 47.128,
+        "max_ms": 74.486
+      },
+      "parent_capture_pose_input_iteration": {
+        "median_ms": 0.202,
+        "max_ms": 0.885
+      },
+      "synthetic_sequences_completed": 2,
+      "synthetic_dispatches": [
+        {
+          "source_sequence": 1,
+          "call_ms": 0.255
+        },
+        {
+          "source_sequence": 26,
+          "call_ms": 0.15
+        }
+      ]
+    }
+  ],
+  "dispatch": [
+    {
+      "sequence": "single",
+      "mode": "blocking",
+      "samples": 10,
+      "individual_call_blocking": {
+        "median_ms": 30.408,
+        "max_ms": 32.346
+      },
+      "full_delivery_elapsed": {
+        "median_ms": 30.41,
+        "max_ms": 32.348
+      },
+      "minimum_observed_hold_ms": 20.935,
+      "minimum_observed_gap_ms": null
+    },
+    {
+      "sequence": "single",
+      "mode": "scheduled",
+      "samples": 10,
+      "individual_call_blocking": {
+        "median_ms": 0.102,
+        "max_ms": 0.499
+      },
+      "full_delivery_elapsed": {
+        "median_ms": 30.705,
+        "max_ms": 31.928
+      },
+      "minimum_observed_hold_ms": 30.106,
+      "minimum_observed_gap_ms": null
+    },
+    {
+      "sequence": "double",
+      "mode": "blocking",
+      "samples": 10,
+      "individual_call_blocking": {
+        "median_ms": 93.151,
+        "max_ms": 94.999
+      },
+      "full_delivery_elapsed": {
+        "median_ms": 93.152,
+        "max_ms": 95.001
+      },
+      "minimum_observed_hold_ms": 30.04,
+      "minimum_observed_gap_ms": 30.52
+    },
+    {
+      "sequence": "double",
+      "mode": "scheduled",
+      "samples": 10,
+      "individual_call_blocking": {
+        "median_ms": 0.067,
+        "max_ms": 1.372
+      },
+      "full_delivery_elapsed": {
+        "median_ms": 93.558,
+        "max_ms": 108.759
+      },
+      "minimum_observed_hold_ms": 29.665,
+      "minimum_observed_gap_ms": 30.435
+    },
+    {
+      "sequence": "triple",
+      "mode": "blocking",
+      "samples": 10,
+      "individual_call_blocking": {
+        "median_ms": 155.144,
+        "max_ms": 156.711
+      },
+      "full_delivery_elapsed": {
+        "median_ms": 155.146,
+        "max_ms": 156.713
+      },
+      "minimum_observed_hold_ms": 28.019,
+      "minimum_observed_gap_ms": 30.147
+    },
+    {
+      "sequence": "triple",
+      "mode": "scheduled",
+      "samples": 10,
+      "individual_call_blocking": {
+        "median_ms": 0.061,
+        "max_ms": 0.83
+      },
+      "full_delivery_elapsed": {
+        "median_ms": 155.967,
+        "max_ms": 158.381
+      },
+      "minimum_observed_hold_ms": 30.116,
+      "minimum_observed_gap_ms": 30.374
+    }
+  ]
+}

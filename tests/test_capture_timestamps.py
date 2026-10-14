@@ -101,6 +101,8 @@ class MainTimestampIntegrationTests(unittest.TestCase):
             recognizer = stack.enter_context(patch('main.GestureRecognizer')).return_value
             recognizer.recognize.return_value = []
             keyboard = stack.enter_context(patch('main.KeyboardBridge'))
+            keyboard.return_value.cancel_action.return_value = None
+            keyboard.return_value.poll_action.return_value = None
             stack.enter_context(patch('main.UIOverlay', return_value=overlay))
             stack.enter_context(patch('main.pin_window_always_on_top'))
             stack.enter_context(patch.multiple(
@@ -112,7 +114,7 @@ class MainTimestampIntegrationTests(unittest.TestCase):
             main.main()
         estimator.process_frame.assert_called_once_with(frame, 125)
         recognizer.recognize.assert_called_once_with(None, 125, actions_enabled=False)
-        keyboard.return_value.send_action.assert_not_called()
+        keyboard.return_value.begin_action.assert_not_called()
         camera.release.assert_called_once_with()
 
 
